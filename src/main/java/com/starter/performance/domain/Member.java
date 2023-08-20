@@ -17,9 +17,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.userdetails.UserDetails;
 
 
 @Getter
@@ -28,7 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Member implements UserDetails {
+public class Member {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long memberId;
@@ -60,35 +60,35 @@ public class Member implements UserDetails {
   @ElementCollection  //'Basic' attribute type should not be a container 에러 나서 붙인 어노테이션
   private List<String> roles;
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return this.roles.stream()
-        .map(SimpleGrantedAuthority::new)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public String getUsername() {
-    return null;
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return false;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return false;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return false;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return false;
-  }
+//  @Override
+//  public Collection<? extends GrantedAuthority> getAuthorities() {
+//    return this.roles.stream()
+//        .map(SimpleGrantedAuthority::new)
+//        .collect(Collectors.toList());
+//  }
+//
+//  @Override
+//  public String getUsername() {
+//    return null;
+//  }
+//
+//  @Override
+//  public boolean isAccountNonExpired() {
+//    return false;
+//  }
+//
+//  @Override
+//  public boolean isAccountNonLocked() {
+//    return false;
+//  }
+//
+//  @Override
+//  public boolean isCredentialsNonExpired() {
+//    return false;
+//  }
+//
+//  @Override
+//  public boolean isEnabled() {
+//    return false;
+//  }
 }
