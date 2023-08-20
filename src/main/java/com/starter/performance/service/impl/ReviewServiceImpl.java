@@ -29,6 +29,31 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReservationRepository reservationRepository;
     private final PerformanceScheduleRepository performanceScheduleRepository;
 
+    @Override
+    public ReviewResponseDto createReview(ReviewRequestDto reviewDto) {
+
+        //if (!checkCanWriteReview(reviewDto.getReservationId()).equals("END")) {
+          //  throw new RuntimeException("현재 후기를 작성할 수 없습니다.");
+        //}
+
+        Member setMember = memberRepository.findById(reviewDto.getMemberId()).orElse(null);
+        Reservation setReservation = reservationRepository.findById(reviewDto.getReservationId()).orElse(null);
+
+        Review review = Review.builder()
+            .member(setMember)
+            .reservation(setReservation)
+            .reviewTitle(reviewDto.getReviewTitle())
+            .reviewContent(reviewDto.getReviewContent())
+            .build();
+
+        Review savedReview = reviewRepository.save(review);
+
+        return ReviewResponseDto.builder()
+            .message("후기 작성을 완료했습니다.")
+            .reviewTitle(savedReview.getReviewTitle())
+            .reviewContent(savedReview.getReviewContent())  // 굳이 내용까지 반환해야하나? 라는 생각이 드네요.
+            .build();
+    }
 
 
     //Controller도 createReview , 서비스 메서드도 createReview 인 건 문제가 있을 것 같습니다.
@@ -82,13 +107,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     //리뷰 작성 가능한 상태인지 확인하는 메서드
     @Override
-    public PerformanceStatus checkCanWriteReview(Long reservationId) {
-//        return reservationRepository.checkPerformanceStatus(reservationId);
-        return null;
-    }
+    public String checkCanWriteReview(Long reservationId) {
 
-    @Override
-    public void createReview(ReviewRequestDto reviewDto) {
+        Long performanceScheduleId = reservationRepository.findByPerformanceSchedule(reservationId);
 
-    }
+        String performanceStatus = reservationRepository.findByPerformanceSchedule_PerformanceStatus(
+            performanceScheduleId);
+        return performanceStatus;}
+
 }
