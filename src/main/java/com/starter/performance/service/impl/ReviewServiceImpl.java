@@ -6,12 +6,14 @@ import com.starter.performance.domain.PerformanceSchedule;
 import com.starter.performance.domain.Reservation;
 import com.starter.performance.domain.Review;
 import com.starter.performance.exception.impl.CanNotWriteReviewException;
+import com.starter.performance.exception.impl.OnlyOneReviewException;
 import com.starter.performance.repository.MemberRepository;
 import com.starter.performance.repository.PerformanceScheduleRepository;
 import com.starter.performance.repository.ReservationRepository;
 import com.starter.performance.repository.ReviewRepository;
 import com.starter.performance.service.ReviewService;
 import com.starter.performance.service.dto.ReviewResponseDto;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 //import org.springframework.security.core.userdetails.User;
@@ -30,7 +32,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewResponseDto createReview(ReviewRequestDto reviewDto) {
 
+        if (checkOneReservation(reviewDto.getReservationId())) {
+            log.info("하나 이상의 후기 예외 발생");
+            throw new OnlyOneReviewException();
+        }
+
         if (!checkCanWriteReview(reviewDto.getReservationId()).equals("END")) {
+            log.info("후기 작성할 수 없는 상태 예외 발생");
             throw new CanNotWriteReviewException();
         }
 
@@ -68,6 +76,14 @@ public class ReviewServiceImpl implements ReviewService {
 
 //        return performanceSchedule2.getPerformanceStatus();
         return performanceSchedule.getPerformanceStatus();
+    }
+
+    // 예매 한 번 당 후기는 한 번 작성할 수 있다. - review 테이블에 똑같은 reservation Id가 있는지 체크
+    public boolean checkOneReservation(Long reservationId) {
+
+        Reservation setReservation = reservationRepository.findById(reservationId).orElse(null);
+
+        return reviewRepository.existsByReservation(setReservation);
     }
 
 
