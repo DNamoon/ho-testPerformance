@@ -3,19 +3,17 @@ package com.starter.performance.service.impl;
 import com.starter.performance.controller.dto.ReviewRequestDto;
 import com.starter.performance.domain.Member;
 import com.starter.performance.domain.PerformanceSchedule;
-import com.starter.performance.domain.PerformanceStatus;
 import com.starter.performance.domain.Reservation;
 import com.starter.performance.domain.Review;
+import com.starter.performance.exception.impl.CanNotWriteReviewException;
 import com.starter.performance.repository.MemberRepository;
 import com.starter.performance.repository.PerformanceScheduleRepository;
 import com.starter.performance.repository.ReservationRepository;
 import com.starter.performance.repository.ReviewRepository;
 import com.starter.performance.service.ReviewService;
 import com.starter.performance.service.dto.ReviewResponseDto;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 //import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +30,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewResponseDto createReview(ReviewRequestDto reviewDto) {
 
-        //if (!checkCanWriteReview(reviewDto.getReservationId()).equals("END")) {
-          //  throw new RuntimeException("현재 후기를 작성할 수 없습니다.");
-        //}
+        if (!checkCanWriteReview(reviewDto.getReservationId()).equals("END")) {
+            throw new CanNotWriteReviewException();
+        }
 
         Member setMember = memberRepository.findById(reviewDto.getMemberId()).orElse(null);
         Reservation setReservation = reservationRepository.findById(reviewDto.getReservationId()).orElse(null);
@@ -53,6 +51,23 @@ public class ReviewServiceImpl implements ReviewService {
             .reviewTitle(savedReview.getReviewTitle())
             .reviewContent(savedReview.getReviewContent())  // 굳이 내용까지 반환해야하나? 라는 생각이 드네요.
             .build();
+    }
+
+    //리뷰 작성 가능한 상태인지 확인하는 메서드. - performanceStatus 확인
+    @Override
+    public String checkCanWriteReview(Long reservationId) {
+
+        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
+
+        PerformanceSchedule performanceSchedule = reservation.getPerformanceSchedule();
+
+        PerformanceSchedule performanceSchedule2 = performanceScheduleRepository.findById(
+            performanceSchedule.getPerformanceScheduleId()).orElse(null);
+//        String performanceStatus = reservationRepository.findByPerformanceSchedule_PerformanceStatus(
+//            performanceSchedule.getPerformanceScheduleId());
+
+//        return performanceSchedule2.getPerformanceStatus();
+        return performanceSchedule.getPerformanceStatus();
     }
 
 
@@ -104,15 +119,5 @@ public class ReviewServiceImpl implements ReviewService {
 //            .reviewContent(savedReview.getReviewContent())  // 굳이 내용까지 반환해야하나? 라는 생각이 드네요.
 //            .build();
 //    }
-
-    //리뷰 작성 가능한 상태인지 확인하는 메서드
-    @Override
-    public String checkCanWriteReview(Long reservationId) {
-
-        Long performanceScheduleId = reservationRepository.findByPerformanceSchedule(reservationId);
-
-        String performanceStatus = reservationRepository.findByPerformanceSchedule_PerformanceStatus(
-            performanceScheduleId);
-        return performanceStatus;}
 
 }
