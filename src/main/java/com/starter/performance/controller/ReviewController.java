@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewController {
 
     private final ReviewService reviewService;
-//    private final ReservationService reservationService;
 
+    // 에러 - Resolved [org.springframework.web.HttpMediaTypeNotSupportedException:
+    // Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported]
+    // -> 일단 @RequestBody 삭제로 해결
     @PostMapping("/review")
-    public ResponseEntity<?> createReview(@RequestBody @Valid ReviewRequestDto reviewDto, Errors errors){
+    public ResponseEntity<?> createReview(@Valid ReviewRequestDto reviewDto, Errors errors){
 
         if (errors.hasErrors()){
             errors.getAllErrors().forEach((exception) -> {

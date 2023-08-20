@@ -9,7 +9,7 @@ public interface ReviewService {
 
 //    ReviewResponseDto registerReview(ReviewRequestDto reviewDto, Long reservationId, User user);
 
-    PerformanceStatus checkCanWriteReview(Long reservation);
+    String checkCanWriteReview(Long reservation);
 
-    void createReview(ReviewRequestDto reviewDto);
+    ReviewResponseDto createReview(ReviewRequestDto reviewDto);
 }
