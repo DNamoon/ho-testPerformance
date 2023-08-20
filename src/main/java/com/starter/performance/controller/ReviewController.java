@@ -4,6 +4,7 @@ import com.starter.performance.controller.dto.ReviewRequestDto;
 import com.starter.performance.exception.ReviewErrorCode;
 import com.starter.performance.service.ReservationService;
 import com.starter.performance.service.ReviewService;
+import com.starter.performance.service.dto.ReviewResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,12 +35,13 @@ public class ReviewController {
                 System.out.println(exception.toString());
             });
             return new ResponseEntity<>(ReviewErrorCode.NOT_CREATE_REVIEW_EXCEPTION, HttpStatus.BAD_REQUEST);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
         // 이상 없으면 service 호출하여 정보 저장
-        reviewService.createReview(reviewDto);
+        ReviewResponseDto reviewResponseDto = reviewService.createReview(reviewDto);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(reviewResponseDto);
     }
 
 

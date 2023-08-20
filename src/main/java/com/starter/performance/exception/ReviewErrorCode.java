@@ -6,5 +6,6 @@ import lombok.Getter;
 public enum ReviewErrorCode {
     NOT_CREATE_REVIEW_EXCEPTION, // 현재 후기 작성 X
     UNTITLED_EXCEPTION, // 제목 없음
-    NO_CONTENT_EXCEPTION // 내용 없음
+    NO_CONTENT_EXCEPTION, // 내용 없음
+    CAN_NOT_WRITE_REVIEW_EXCEPTION,
 }
