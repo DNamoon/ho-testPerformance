@@ -5,6 +5,7 @@ import com.starter.performance.domain.Reservation;
 import com.starter.performance.domain.Review;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class ReviewRequestDto {
     @NotBlank(message = "제목은 필수 항목 입니다.")
     private String reviewTitle;
     @NotBlank(message = "내용은 필수 항목 입니다.")
+    @Size(max = 1000)
     private String reviewContent;
 
 //    public Review toEntity() {
