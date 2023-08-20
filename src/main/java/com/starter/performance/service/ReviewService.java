@@ -12,4 +12,6 @@ public interface ReviewService {
     String checkCanWriteReview(Long reservation);
 
     ReviewResponseDto createReview(ReviewRequestDto reviewDto);
+
+    boolean checkOneReservation(Long reservationId);
 }
