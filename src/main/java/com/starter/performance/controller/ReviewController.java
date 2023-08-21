@@ -7,6 +7,7 @@ import com.starter.performance.service.ReviewService;
 import com.starter.performance.service.dto.ReviewResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
@@ -28,7 +29,7 @@ public class ReviewController {
     // Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported]
     // -> 일단 @RequestBody 삭제로 해결
     @PostMapping("/review")
-    public ResponseEntity<?> createReview(@Valid ReviewRequestDto reviewDto, Errors errors){
+    public ResponseEntity<?> createReview(@RequestBody @Valid ReviewRequestDto reviewDto, Errors errors){
 
 //        if (errors.hasErrors()){
 //            errors.getAllErrors().forEach((exception) -> {
