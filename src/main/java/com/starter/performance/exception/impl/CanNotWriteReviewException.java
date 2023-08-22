@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 public class CanNotWriteReviewException extends AbstractException {
 
-    private static final String MESSAGE = "현재 후기를 작성할 수 없습니다.";
+//    private static final String MESSAGE = "현재 후기를 작성할 수 없습니다.";
     @Override
     public int getStatusCode() {
         return HttpStatus.BAD_REQUEST.value();
@@ -18,7 +18,7 @@ public class CanNotWriteReviewException extends AbstractException {
     public Object getData() {
         return Data.builder()
             .errorType(ReviewErrorCode.CAN_NOT_WRITE_REVIEW_EXCEPTION)
-            .errorMessage(MESSAGE)
+//            .errorMessage(MESSAGE)
             .build();
     }
 

@@ -9,9 +9,9 @@ public interface ReviewService {
 
 //    ReviewResponseDto registerReview(ReviewRequestDto reviewDto, Long reservationId, User user);
 
-    String checkCanWriteReview(Long reservation);
+//    String checkCanWriteReview(Long reservation);
 
     ReviewResponseDto createReview(ReviewRequestDto reviewDto);
 
-    boolean checkOneReservation(Long reservationId);
+//    boolean checkOneReservation(Long reservationId);
 }

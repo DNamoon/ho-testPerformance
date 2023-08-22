@@ -7,6 +7,7 @@ import com.starter.performance.service.ReviewService;
 import com.starter.performance.service.dto.ReviewResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,28 +18,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    // 에러 - Resolved [org.springframework.web.HttpMediaTypeNotSupportedException:
-    // Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported]
-    // -> 일단 @RequestBody 삭제로 해결
     @PostMapping("/review")
-    public ResponseEntity<?> createReview(@Valid ReviewRequestDto reviewDto, Errors errors){
+    public ResponseEntity<?> createReview(@RequestBody @Valid ReviewRequestDto reviewDto){
 
-//        if (errors.hasErrors()){
-//            errors.getAllErrors().forEach((exception) -> {
-//                System.out.println(exception.toString());
-//            });
-//            return new ResponseEntity<>(ReviewErrorCode.NOT_CREATE_REVIEW_EXCEPTION, HttpStatus.BAD_REQUEST);
-////            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-//        }
-
-        // 이상 없으면 service 호출하여 정보 저장
         ReviewResponseDto reviewResponseDto = reviewService.createReview(reviewDto);
 
         return ResponseEntity.ok(reviewResponseDto);
