@@ -2,21 +2,17 @@ package com.starter.performance.service.impl;
 
 import com.starter.performance.controller.dto.ReviewRequestDto;
 import com.starter.performance.domain.Member;
-import com.starter.performance.domain.PerformanceSchedule;
 import com.starter.performance.domain.Reservation;
 import com.starter.performance.domain.Review;
 import com.starter.performance.exception.impl.CanNotWriteReviewException;
 import com.starter.performance.exception.impl.OnlyOneReviewException;
 import com.starter.performance.repository.MemberRepository;
-import com.starter.performance.repository.PerformanceScheduleRepository;
 import com.starter.performance.repository.ReservationRepository;
 import com.starter.performance.repository.ReviewRepository;
 import com.starter.performance.service.ReviewService;
 import com.starter.performance.service.dto.ReviewResponseDto;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,27 +23,28 @@ public class ReviewServiceImpl implements ReviewService {
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
-    private final PerformanceScheduleRepository performanceScheduleRepository;
 
     @Override
     public ReviewResponseDto createReview(ReviewRequestDto reviewDto) {
 
-        if (checkOneReservation(reviewDto.getReservationId())) {
-            log.info("하나 이상의 후기 예외 발생");
-            throw new OnlyOneReviewException();
-        }
 
-        if (!checkCanWriteReview(reviewDto.getReservationId()).equals("END")) {
-            log.info("후기 작성할 수 없는 상태 예외 발생");
-            throw new CanNotWriteReviewException();
-        }
+//        if (checkOneReservation(reviewDto.getReservationId())) {
+//            log.info("하나 이상의 후기 예외 발생");
+//            throw new OnlyOneReviewException();
+//        }
+//
+//        if (!checkCanWriteReview(reviewDto.getReservationId()).equals("END")) {
+//            log.info("후기 작성할 수 없는 상태 예외 발생");
+//            throw new CanNotWriteReviewException();
+//        }
 
-        Member setMember = memberRepository.findById(reviewDto.getMemberId()).orElse(null);
-        Reservation setReservation = reservationRepository.findById(reviewDto.getReservationId()).orElse(null);
+        Member member = memberRepository.findById(reviewDto.getMemberId()).orElseThrow(()-> new IllegalArgumentException());
+        Reservation reservation = reservationRepository.findById(reviewDto.getReservationId()).orElseThrow(()-> new IllegalArgumentException());
+        validateCanCreateReview(member,reservation);
 
         Review review = Review.builder()
-            .member(setMember)
-            .reservation(setReservation)
+            .member(member)
+            .reservation(reservation)
             .reviewTitle(reviewDto.getReviewTitle())
             .reviewContent(reviewDto.getReviewContent())
             .build();
@@ -57,34 +54,42 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewResponseDto.builder()
             .message("후기 작성을 완료했습니다.")
             .reviewTitle(savedReview.getReviewTitle())
-            .reviewContent(savedReview.getReviewContent())  // 굳이 내용까지 반환해야하나? 라는 생각이 드네요.
             .build();
     }
 
-    //리뷰 작성 가능한 상태인지 확인하는 메서드. - performanceStatus 확인
-    @Override
-    public String checkCanWriteReview(Long reservationId) {
-
-        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
-
-        PerformanceSchedule performanceSchedule = reservation.getPerformanceSchedule();
-
-        PerformanceSchedule performanceSchedule2 = performanceScheduleRepository.findById(
-            performanceSchedule.getPerformanceScheduleId()).orElse(null);
-//        String performanceStatus = reservationRepository.findByPerformanceSchedule_PerformanceStatus(
-//            performanceSchedule.getPerformanceScheduleId());
-
-//        return performanceSchedule2.getPerformanceStatus();
-        return performanceSchedule.getPerformanceStatus();
+    private void validateCanCreateReview(Member member, Reservation reservation) {
+        if (reviewRepository.findByReservationAndMember(reservation, member).isPresent()) {
+            throw new OnlyOneReviewException();
+        }
+        if (!reservation.getPerformanceSchedule().getPerformanceStatus().equals("END")){
+            throw new CanNotWriteReviewException();
+        }
     }
+
+    //리뷰 작성 가능한 상태인지 확인하는 메서드. - performanceStatus 확인
+//    @Override
+//    public String checkCanWriteReview(Long reservationId) {
+//
+//        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
+//
+//        PerformanceSchedule performanceSchedule = reservation.getPerformanceSchedule();
+//
+////        PerformanceSchedule performanceSchedule2 = performanceScheduleRepository.findById(
+////            performanceSchedule.getPerformanceScheduleId()).orElse(null);
+////        String performanceStatus = reservationRepository.findByPerformanceSchedule_PerformanceStatus(
+////            performanceSchedule.getPerformanceScheduleId());
+//
+////        return performanceSchedule2.getPerformanceStatus();
+//        return performanceSchedule.getPerformanceStatus();
+//    }
 
     // 예매 한 번 당 후기는 한 번 작성할 수 있다. - review 테이블에 똑같은 reservation Id가 있는지 체크
-    public boolean checkOneReservation(Long reservationId) {
-
-        Reservation setReservation = reservationRepository.findById(reservationId).orElse(null);
-
-        return reviewRepository.existsByReservation(setReservation);
-    }
+//    public boolean checkOneReservation(Long reservationId) {
+//
+//        Reservation setReservation = reservationRepository.findById(reservationId).orElseThrow(()-> new OnlyOneReviewException());
+//
+//        return reviewRepository.existsByReservation(setReservation);
+//    }
 
 
     //Controller도 createReview , 서비스 메서드도 createReview 인 건 문제가 있을 것 같습니다.
