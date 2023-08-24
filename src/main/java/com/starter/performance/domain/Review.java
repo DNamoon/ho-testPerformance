@@ -24,8 +24,9 @@ import lombok.NoArgsConstructor;
 public class Review {
 
     @Id
+    @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -36,9 +37,9 @@ public class Review {
     private Reservation reservation;
 
     @Column(nullable = false)
-    private String reviewTitle;
+    private String title;
 
-    @Column(nullable = false)
-    private String reviewContent;
+    @Column(nullable = false, length = 1000)
+    private String content;
 
 }

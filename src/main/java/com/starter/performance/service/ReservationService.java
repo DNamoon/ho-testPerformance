@@ -4,5 +4,5 @@ import com.starter.performance.domain.Reservation;
 import java.util.Optional;
 
 public interface ReservationService {
-    Optional<Reservation> findOne(Long reservationId);
+//    Optional<Reservation> findOne(Long reservationId);
 }

@@ -10,11 +10,12 @@ import javax.persistence.Id;
 public class Performance {
 
     @Id
+    @Column(name = "performance_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long performanceId;
+    private Long id;
 
     @Column(nullable = false)
-    private String performanceName;
+    private String name;
 
     @Column(nullable = false)
     private String venue;

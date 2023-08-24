@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,8 +31,9 @@ import lombok.Setter;
 @Entity
 public class Member {
   @Id
+  @Column(name = "member_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long memberId;
+  private Long id;
 
   private String email;
 
@@ -54,6 +56,7 @@ public class Member {
   private boolean sanctionWhether;
 
   @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
+  @Builder.Default
   private List<Review> reviewList = new ArrayList<>();
 
 
