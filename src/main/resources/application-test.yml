@@ -4,7 +4,7 @@ spring:
       com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/performance?serverTimezone=Asia/Seoul
     username: root
-    password: 1233
+    password: root0000
 
   jpa:
     show-sql:
@@ -13,8 +13,7 @@ spring:
       true
     hibernate:
       ddl-auto:
-        update
+         create
     properties:
       hibernate:
-        format_sql:
-          true,
+        format_sql: true

@@ -14,8 +14,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
 
 
-    @Override
-    public Optional<Reservation> findOne(Long reservationId) {
-        return reservationRepository.findById(reservationId);
-    }
+//    @Override
+//    public Optional<Reservation> findOne(Long reservationId) {
+//        return reservationRepository.findById(reservationId);
+//    }
 }

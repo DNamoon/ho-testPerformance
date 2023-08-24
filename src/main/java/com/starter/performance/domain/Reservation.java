@@ -1,7 +1,10 @@
 package com.starter.performance.domain;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,12 +23,13 @@ import lombok.NoArgsConstructor;
 public class Reservation {
 
     @Id
+    @Column(name = "reservation_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reservationId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "performance_Schedule_id")
@@ -37,7 +41,8 @@ public class Reservation {
 
     /** 이거 enum으로 하려다가 에러 자꾸 남. 타입 ReservatioinStatus 에서 String으로 변경*/
     //For input string: "YES"; nested exception is java.lang.NumberFormatException 에러 발생
-    private String reservationStatus;
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus reservationStatus;
 
     private LocalDateTime performanceDate;
 
