@@ -28,7 +28,6 @@ public class Member {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false)
   private Long id;
 
   @Column(unique = true, length = 50, nullable = false)
@@ -43,16 +42,14 @@ public class Member {
   @Column(nullable = false)
   private String nickname;
 
-  @Column(name = "registered_date", nullable = false)
+  @Column(name = "registered_date")
   @CreatedDate
-  @NotNull
   private LocalDateTime registeredDate;
 
   private LocalDateTime modifiedDate;
 
   private LocalDateTime withdrawalDate;
 
-  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private Permission permission;
 

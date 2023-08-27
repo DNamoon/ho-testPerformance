@@ -66,6 +66,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ResponseDto registerReviewV2(ReviewRequestDto reviewDto, Long reservationId, Authentication auth) {
 
+        log.info("auth.getName() : " + auth.getName());
+        log.info("auth.getPrincipal() : " + auth.getPrincipal().toString());
+
         String email = auth.getName();
         Member member = memberRepository.findByEmail(email)
             .orElseThrow(IllegalArgumentException::new);
@@ -119,6 +122,5 @@ public class ReviewServiceImpl implements ReviewService {
             throw new NotMatchReservationAndMemberException();
         }
     }
-
 
 }
