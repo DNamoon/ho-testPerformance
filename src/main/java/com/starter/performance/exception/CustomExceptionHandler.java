@@ -1,5 +1,6 @@
 package com.starter.performance.exception;
 
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,8 @@ public class CustomExceptionHandler {
             .data(exception.getData())
             .build();
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.resolve(exception.getStatusCode()));
+        return new ResponseEntity<>(errorResponse,
+            Objects.requireNonNull(HttpStatus.resolve(exception.getStatusCode())));
     }
 }
 
