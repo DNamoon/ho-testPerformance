@@ -5,6 +5,7 @@ import com.starter.performance.domain.Member;
 import com.starter.performance.domain.Reservation;
 import com.starter.performance.service.dto.ResponseDto;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ReviewService {
 
@@ -15,6 +16,9 @@ public interface ReviewService {
     void checkOneReservation(Member member, Reservation reservation);
 
     void checkReservationInfo(Member member, Reservation reservation);
+
+    @Transactional
+    ResponseDto registerReviewV3(ReviewRequestDto reviewDto, Long reservationId, Authentication auth);
 
     ResponseDto registerReviewV2(ReviewRequestDto reviewDto, Long reservationId, Authentication auth);
 }

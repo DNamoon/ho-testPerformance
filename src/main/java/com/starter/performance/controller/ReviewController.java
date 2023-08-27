@@ -38,14 +38,26 @@ public class ReviewController {
 //        return ResponseEntity.ok(responseDto);
 //    }
 
+    /** 기존 사용 코드 - 토큰에서 회원 email 받아오기 */
     //Eunjeong21님 방법 - 이게 더 올바른 코드인 듯.
+//    @PostMapping("/reservations/reviews/{reservationId}")
+//    public ResponseEntity<?> createReviewV2(@RequestBody @Valid ReviewRequestDto reviewRequestDto,
+//        @PathVariable Long reservationId, Authentication auth) {
+//
+//        ResponseDto responseDto = reviewService.registerReviewV2(reviewRequestDto, reservationId, auth);
+//
+//        return ResponseEntity.ok(responseDto);
+//    }
+
+    /** refactor - 토큰에서 회원 id 받아오기 */
     @PostMapping("/reservations/reviews/{reservationId}")
-    public ResponseEntity<?> createReviewV2(@RequestBody @Valid ReviewRequestDto reviewRequestDto,
+    public ResponseEntity<?> createReviewV3(@RequestBody @Valid ReviewRequestDto reviewRequestDto,
         @PathVariable Long reservationId, Authentication auth) {
 
-        ResponseDto responseDto = reviewService.registerReviewV2(reviewRequestDto, reservationId, auth);
+        ResponseDto responseDto = reviewService.registerReviewV3(reviewRequestDto, reservationId, auth);
 
         return ResponseEntity.ok(responseDto);
     }
+
 
 }

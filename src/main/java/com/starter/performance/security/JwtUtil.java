@@ -38,4 +38,14 @@ public class JwtUtil {
             .get("email", String.class);
     }
 
+    /** 리팩토링 시 사용 */
+    // 실험 중. email 꺼낸게 우연인지, 넣어줘서 꺼낼 수 있던것인지 확인.
+    public static Long getId(String token, String secretKey) {
+        return Jwts.parser()
+            .setSigningKey(secretKey)
+            .parseClaimsJws(token)
+            .getBody()
+            .get("id", Long.class);
+    }
+
 }

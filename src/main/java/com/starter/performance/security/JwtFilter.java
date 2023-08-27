@@ -45,12 +45,22 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        /** 기존 코드 */
 //        토큰에서 email 꺼내기
-        String email = JwtUtil.getEmail(token, secretKey);
-        log.info("email: {}", email);
+//        String email = JwtUtil.getEmail(token, secretKey);
+//        log.info("email: {}", email);
+//
+//        UsernamePasswordAuthenticationToken authenticationToken =
+//            new UsernamePasswordAuthenticationToken(email, null,
+//                List.of(new SimpleGrantedAuthority("USER")));
+
+        /** 리팩토링시 사용 */
+        //토큰에서 id 꺼내기
+        Long id = JwtUtil.getId(token, secretKey);
+        log.info("id : {}", id);
 
         UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(email, null,
+            new UsernamePasswordAuthenticationToken(id, null,
                 List.of(new SimpleGrantedAuthority("USER")));
 
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

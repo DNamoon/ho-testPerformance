@@ -62,6 +62,43 @@ public class ReviewServiceImpl implements ReviewService {
 //            .build();
 //    }
 
+    /** 토큰에서 회원 id 받아오는 메서드 - 나중에 리팩토링시 적용*/
+    @Transactional
+    @Override
+    public ResponseDto registerReviewV3(ReviewRequestDto reviewDto, Long reservationId, Authentication auth) {
+
+        log.info("auth.getName() : " + auth.getName());
+
+        Long id = Long.valueOf(auth.getName());
+        Member member = memberRepository.findById(id)
+            .orElseThrow(IllegalArgumentException::new);
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        // 리뷰 작성 회원과 예매 정보 회원정보 일치 확인
+        checkReservationInfo(member, reservation);
+        // 예매 한 번 당 후기 한 번 확인
+        checkOneReservation(member, reservation);
+        // 리뷰 작성 가능한 상태인지 확인
+        checkCanWriteReview(reservation);
+
+        Review review = Review.builder()
+            .member(member)
+            .reservation(reservation)
+            .title(reviewDto.getReviewTitle())
+            .content(reviewDto.getReviewContent())
+            .build();
+
+        Review savedReview = reviewRepository.save(review);
+
+        return ResponseDto.builder()
+            .message(MESSAGE)
+            .statusCode(String.valueOf(HttpStatus.OK))
+            .data(ReviewResponseDto.builder().title(savedReview.getTitle()).build())
+            .build();
+    }
+
     @Transactional
     @Override
     public ResponseDto registerReviewV2(ReviewRequestDto reviewDto, Long reservationId, Authentication auth) {
