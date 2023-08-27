@@ -38,7 +38,7 @@ public class ReviewController {
 //        return ResponseEntity.ok(responseDto);
 //    }
 
-    // 은정님 방법 - 이게 더 올바른 코드인 듯.
+    //Eunjeong21님 방법 - 이게 더 올바른 코드인 듯.
     @PostMapping("/reservations/reviews/{reservationId}")
     public ResponseEntity<?> createReviewV2(@RequestBody @Valid ReviewRequestDto reviewRequestDto,
         @PathVariable Long reservationId, Authentication auth) {
