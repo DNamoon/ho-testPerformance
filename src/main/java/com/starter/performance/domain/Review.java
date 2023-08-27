@@ -13,30 +13,26 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-//Member 엔티티와 Review 엔티티는 단방향으로, 회원 테이블만 후기 테이블 참조하면 되겠다.
-//Review 엔티티가 Reservation 엔티티를 단방향으로 참조하면 되겠다. -> 안된다는데? 양방향으로 구현? 외래키 있는 테이블이 주
 @Entity
 @Builder
 @Getter
-//@RequiredArgsConstructor  //Builder 사용하면 충돌남
 @NoArgsConstructor
 @AllArgsConstructor
 public class Review {
 
     @Id
-    @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member")
     private Member member;
 
     @OneToOne
-    @JoinColumn(name = "reservation_id")
+    @JoinColumn(name = "reservation")
     private Reservation reservation;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String title;
 
     @Column(nullable = false, length = 1000)

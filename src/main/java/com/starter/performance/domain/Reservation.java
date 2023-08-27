@@ -23,29 +23,31 @@ import lombok.NoArgsConstructor;
 public class Reservation {
 
     @Id
-    @Column(name = "reservation_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member")
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "performance_Schedule_id")
+    @JoinColumn(name = "performance_schedule")
     private PerformanceSchedule performanceSchedule;
 
+    @Column(nullable = false, length = 100)
     private String performanceName;
 
+    @Column(nullable = false)
     private Integer ticketQuantity;
 
-    /** 이거 enum으로 하려다가 에러 자꾸 남. 타입 ReservatioinStatus 에서 String으로 변경*/
-    //For input string: "YES"; nested exception is java.lang.NumberFormatException 에러 발생
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private ReservationStatus reservationStatus;
 
+    @Column(nullable = false)
     private LocalDateTime performanceDate;
 
+    @Column(nullable = false)
     private LocalDateTime reservationDate;
 
 }

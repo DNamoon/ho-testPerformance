@@ -10,7 +10,6 @@ import javax.persistence.Id;
 public class Performance {
 
     @Id
-    @Column(name = "performance_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

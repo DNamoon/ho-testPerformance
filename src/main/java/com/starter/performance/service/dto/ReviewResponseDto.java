@@ -1,16 +1,13 @@
 package com.starter.performance.service.dto;
 
-import com.starter.performance.exception.Data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Setter;
 
-@Setter
+@Getter
 @Builder
-@AllArgsConstructor
+//@AllArgsConstructor
 public class ReviewResponseDto {
-
-    private int StatusCode;
-    private Object data;
-
+    private String title;
 }
