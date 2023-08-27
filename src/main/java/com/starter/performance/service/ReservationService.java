@@ -1,8 +1,10 @@
 package com.starter.performance.service;
 
-import com.starter.performance.domain.Reservation;
-import java.util.Optional;
+import com.starter.performance.controller.dto.ReservationRequestDto;
+import com.starter.performance.service.dto.ResponseDto;
+import org.springframework.security.core.Authentication;
 
 public interface ReservationService {
-//    Optional<Reservation> findOne(Long reservationId);
+
+    ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth);
 }

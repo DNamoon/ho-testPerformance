@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ResponseDto {
-    String statusCode;
-    String message;
-    Object data;
+
+    private Integer statusCode;
+    private String message;
+    private Object data;
 }
