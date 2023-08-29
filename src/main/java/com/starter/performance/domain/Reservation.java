@@ -38,7 +38,7 @@ public class Reservation {
     private String performanceName;
 
     @Column(nullable = false)
-    private Integer ticketQuantity;
+    private Integer reservedTicketNum;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)

@@ -9,6 +9,7 @@ import lombok.Getter;
 public class ReservationResponseDto {
 
     private String performanceName;
+    private Integer reservedTicketNum;
     private LocalDateTime performanceDate;
     private LocalDateTime reservationDate;
 }
