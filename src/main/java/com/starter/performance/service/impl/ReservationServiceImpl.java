@@ -7,6 +7,7 @@ import com.starter.performance.domain.PerformanceSchedule;
 import com.starter.performance.domain.PerformanceStatus;
 import com.starter.performance.domain.Reservation;
 import com.starter.performance.domain.ReservationStatus;
+import com.starter.performance.exception.impl.ExistReservationException;
 import com.starter.performance.exception.impl.NotPresentTicketException;
 import com.starter.performance.exception.impl.NotProperPerformanceStatusException;
 import com.starter.performance.exception.impl.NotProperReservationDateException;
@@ -18,6 +19,10 @@ import com.starter.performance.service.ReservationService;
 import com.starter.performance.service.dto.ReservationResponseDto;
 import com.starter.performance.service.dto.ResponseDto;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +44,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final static String MESSAGE = "예매가 완료되었습니다.";
 
-    private Long isPossibleReservation;
-    private final static Long VIP_POSSIBLE = 7L;
-    private final static Long NORMAL_POSSIBLE = 6L;
+    private Long possibleReservationDate;
+    private final static Long VIP_POSSIBLE_DATE = 7L;
+    private final static Long NORMAL_POSSIBLE_DATE = 6L;
 
     @Override
     public ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth) {
@@ -57,6 +62,10 @@ public class ReservationServiceImpl implements ReservationService {
 
         PerformanceSchedule performanceSchedule = performanceScheduleRepository.findById(performanceScheduleId)
             .orElseThrow(IllegalArgumentException::new);
+
+        /** 이미 예매한 정보가 있는지 확인 */
+        existReservation(member, performanceSchedule);
+
         /** 예매 가능한 상태인지 확인 - performance_state == TICKETING */
         checkPerformanceState(performanceSchedule);
 
@@ -123,17 +132,17 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    // 예매 가능한 날짜인지 등급별 확인 - VIP는 공연 7일전 예매 가능, NORMAL은 공연 6일전 예매 가능
     @Override
-    // 예매 가능한 상태인지 확인 - VIP는 공연 7일전 예매 가능, NORMAL은 공연 6일전 예매 가능
     public void checkReservationPossibleDate(PerformanceSchedule performanceSchedule, Name name) {
         if (name.equals(Name.VIP)) {
-            isPossibleReservation = VIP_POSSIBLE;
+            possibleReservationDate = VIP_POSSIBLE_DATE;
         } else if (name.equals(Name.NORMAL)) {
-            isPossibleReservation = NORMAL_POSSIBLE;
+            possibleReservationDate = NORMAL_POSSIBLE_DATE;
         }
 
         LocalDateTime performanceDate = performanceSchedule.getPerformanceDate()
-            .minusDays(isPossibleReservation).withHour(0).withMinute(0);
+            .minusDays(possibleReservationDate).withHour(0).withMinute(0);
         LocalDateTime reservationPossibleDate = LocalDateTime.now();
 
         log.info("예매 가능 날짜 : " + performanceDate);
@@ -147,6 +156,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     }
 
+    // performanceState == TICKETING인지 확인. (예매 가능 상태인지 확인)
     @Override
     public void checkPerformanceState(PerformanceSchedule performanceSchedule) {
         if (!performanceSchedule.getPerformanceStatus().equals(PerformanceStatus.TICKETING)) {
@@ -154,5 +164,15 @@ public class ReservationServiceImpl implements ReservationService {
             throw new NotProperPerformanceStatusException();
         }
     }
+
+    // 만약 이미 예매한 정보가 reservation 테이블에 있는지 확인 - 있다면 예매 진행 불가
+    public void existReservation(Member member, PerformanceSchedule performanceSchedule) {
+
+        if (reservationRepository.existsByMemberAndPerformanceSchedule(member,performanceSchedule)) {
+            throw new ExistReservationException();
+        }
+
+    }
+
 
 }
