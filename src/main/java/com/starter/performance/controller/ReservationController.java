@@ -26,4 +26,10 @@ public class ReservationController {
         ResponseDto responseDto = reservationService.makeReservation(performanceScheduleId, dto, auth);
         return ResponseEntity.ok(responseDto);
     }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<ResponseDto> viewReservations(Authentication auth) {
+        ResponseDto responseDto = reservationService.showReservations(auth);
+        return ResponseEntity.ok(responseDto);
+    }
 }

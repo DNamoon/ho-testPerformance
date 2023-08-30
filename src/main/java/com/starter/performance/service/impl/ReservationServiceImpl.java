@@ -21,8 +21,6 @@ import com.starter.performance.service.dto.ResponseDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +40,12 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final EntityManager entityManager;
 
-    private final static String MESSAGE = "예매가 완료되었습니다.";
+    private final static String RESERVATION_MESSAGE = "예매가 완료되었습니다.";
+    private final static String SHOW_MESSAGE = "예매 목록을 불러옵니다.";
 
     private Long possibleReservationDate;
     private final static Long VIP_POSSIBLE_DATE = 7L;
-    private final static Long NORMAL_POSSIBLE_DATE = 6L;
+    private final static Long STANDARD_POSSIBLE_DATE = 6L;
 
     @Override
     public ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth) {
@@ -91,13 +90,39 @@ public class ReservationServiceImpl implements ReservationService {
 
         return ResponseDto.builder()
             .statusCode(HttpStatus.OK.value())
-            .message(MESSAGE)
+            .message(RESERVATION_MESSAGE)
             .data(new ReservationResponseDto(
                 savedReservation.getPerformanceName(),
                 savedReservation.getReservedTicketNum(),
                 savedReservation.getPerformanceDate(),
                 savedReservation.getReservationDate()
             ))
+            .build();
+    }
+
+    @Override
+    public ResponseDto showReservations(Authentication auth) {
+        List<ReservationResponseDto> dtoList = new ArrayList<>();
+
+        String email = auth.getName();
+        Member member = memberRepository.findByEmail(email).orElseThrow(IllegalArgumentException::new);
+
+        List<Reservation> list = reservationRepository.findAllByMember(member);
+
+        for (Reservation setReservation : list) {
+            ReservationResponseDto dto = new ReservationResponseDto(
+                setReservation.getPerformanceName(),
+                setReservation.getReservedTicketNum(),
+                setReservation.getPerformanceDate(),
+                setReservation.getReservationDate());
+
+            dtoList.add(dto);
+        }
+
+        return ResponseDto.builder()
+            .statusCode(HttpStatus.OK.value())
+            .message(SHOW_MESSAGE)
+            .data(dtoList)
             .build();
     }
 
@@ -132,13 +157,13 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    // 예매 가능한 날짜인지 등급별 확인 - VIP는 공연 7일전 예매 가능, NORMAL은 공연 6일전 예매 가능
+    // 예매 가능한 날짜인지 등급별 확인 - VIP는 공연 7일전 예매 가능, STANDARD는 공연 6일전 예매 가능
     @Override
     public void checkReservationPossibleDate(PerformanceSchedule performanceSchedule, Name name) {
         if (name.equals(Name.VIP)) {
             possibleReservationDate = VIP_POSSIBLE_DATE;
-        } else if (name.equals(Name.NORMAL)) {
-            possibleReservationDate = NORMAL_POSSIBLE_DATE;
+        } else if (name.equals(Name.STANDARD)) {
+            possibleReservationDate = STANDARD_POSSIBLE_DATE;
         }
 
         LocalDateTime performanceDate = performanceSchedule.getPerformanceDate()
@@ -167,12 +192,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     // 만약 이미 예매한 정보가 reservation 테이블에 있는지 확인 - 있다면 예매 진행 불가
     public void existReservation(Member member, PerformanceSchedule performanceSchedule) {
-
         if (reservationRepository.existsByMemberAndPerformanceSchedule(member,performanceSchedule)) {
             throw new ExistReservationException();
         }
-
     }
-
 
 }

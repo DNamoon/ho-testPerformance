@@ -11,6 +11,8 @@ public interface ReservationService {
 
     ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth);
 
+    ResponseDto showReservations(Authentication auth);
+
     @Transactional
     void updateTicket(Long performanceScheduleId, Integer ticket);
 
@@ -19,4 +21,5 @@ public interface ReservationService {
     void checkReservationPossibleDate(PerformanceSchedule performanceSchedule, Name name);
 
     void checkPerformanceState(PerformanceSchedule performanceSchedule);
+
 }
