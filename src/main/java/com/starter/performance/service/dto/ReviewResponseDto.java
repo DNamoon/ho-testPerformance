@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Builder
-//@AllArgsConstructor
 public class ReviewResponseDto {
+
     private String title;
 }

@@ -91,7 +91,7 @@ public class ReservationServiceImpl implements ReservationService {
         return ResponseDto.builder()
             .statusCode(HttpStatus.OK.value())
             .message(RESERVATION_MESSAGE)
-            .data(new ReservationResponseDto(
+            .body(new ReservationResponseDto(
                 savedReservation.getPerformanceName(),
                 savedReservation.getReservedTicketNum(),
                 savedReservation.getPerformanceDate(),
@@ -122,7 +122,7 @@ public class ReservationServiceImpl implements ReservationService {
         return ResponseDto.builder()
             .statusCode(HttpStatus.OK.value())
             .message(SHOW_MESSAGE)
-            .data(dtoList)
+            .body(dtoList)
             .build();
     }
 
