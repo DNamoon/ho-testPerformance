@@ -1,5 +1,6 @@
 package com.starter.performance.service.impl;
 
+import com.starter.performance.config.MailComponent;
 import com.starter.performance.controller.dto.ReservationRequestDto;
 import com.starter.performance.domain.Member;
 import com.starter.performance.domain.Name;
@@ -39,6 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
 
     private final EntityManager entityManager;
+    private final MailComponent mailComponent;
 
     private final static String RESERVATION_MESSAGE = "예매가 완료되었습니다.";
     private final static String SHOW_MESSAGE = "예매 목록을 불러옵니다.";
@@ -88,6 +90,9 @@ public class ReservationServiceImpl implements ReservationService {
         log.info("ticketQuantity : " + dto.getReservedTicketNum());
         Reservation savedReservation = reservationRepository.save(reservation);
 
+        /** 예약 확인 이메일 보내기 */
+        sendMail(email, savedReservation);
+
         return ResponseDto.builder()
             .statusCode(HttpStatus.OK.value())
             .message(RESERVATION_MESSAGE)
@@ -100,6 +105,22 @@ public class ReservationServiceImpl implements ReservationService {
             .build();
     }
 
+    // 예매 완료 후 확인 메일 보내기
+    @Override
+    public void sendMail(String email, Reservation savedReservation) {
+        if (reservationRepository.findById(savedReservation.getId()).isEmpty()) {
+            throw new RuntimeException("예매 내역이 없습니다.");
+        }
+
+        String subject = "[공연 예매 사이트] 예매가 무사히 완료되었습니다.";
+        String text = email + "님의 [" + savedReservation.getPerformanceName()
+            + "] 예매가 무사히 완료되었습니다. 자세한 내용은 예매목록보기에서 확인할 수 있습니다.";
+
+        mailComponent.sendMail(email, subject, text);
+
+    }
+
+    // 예매 목록 보기
     @Override
     public ResponseDto showReservations(Authentication auth) {
         List<ReservationResponseDto> dtoList = new ArrayList<>();
@@ -192,7 +213,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     // 만약 이미 예매한 정보가 reservation 테이블에 있는지 확인 - 있다면 예매 진행 불가
     public void existReservation(Member member, PerformanceSchedule performanceSchedule) {
-        if (reservationRepository.existsByMemberAndPerformanceSchedule(member,performanceSchedule)) {
+        if (reservationRepository.existsByMemberAndPerformanceSchedule(member, performanceSchedule)) {
             throw new ExistReservationException();
         }
     }
