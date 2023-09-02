@@ -2,7 +2,7 @@ package com.starter.performance.controller;
 
 import com.starter.performance.controller.dto.ReviewRequestDto;
 import com.starter.performance.service.ReviewService;
-import com.starter.performance.service.dto.ResponseDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

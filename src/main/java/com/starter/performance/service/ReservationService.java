@@ -4,7 +4,7 @@ import com.starter.performance.controller.dto.ReservationRequestDto;
 import com.starter.performance.domain.Name;
 import com.starter.performance.domain.PerformanceSchedule;
 import com.starter.performance.domain.Reservation;
-import com.starter.performance.service.dto.ResponseDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;

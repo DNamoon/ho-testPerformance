@@ -2,7 +2,7 @@ package com.starter.performance.controller;
 
 import com.starter.performance.controller.dto.ReservationRequestDto;
 import com.starter.performance.service.ReservationService;
-import com.starter.performance.service.dto.ResponseDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

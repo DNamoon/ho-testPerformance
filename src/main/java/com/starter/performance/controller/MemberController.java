@@ -3,7 +3,7 @@ package com.starter.performance.controller;
 import com.starter.performance.controller.dto.LoginRequestDto;
 import com.starter.performance.controller.dto.SignUpRequestDto;
 import com.starter.performance.service.MemberService;
-import com.starter.performance.service.dto.ResponseDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;

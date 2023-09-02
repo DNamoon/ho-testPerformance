@@ -4,8 +4,8 @@ import com.starter.performance.controller.dto.LoginRequestDto;
 import com.starter.performance.controller.dto.SignUpRequestDto;
 import com.starter.performance.domain.Member;
 import com.starter.performance.exception.CustomException;
+import com.starter.performance.exception.ErrorData;
 import com.starter.performance.exception.ErrorType;
-import com.starter.performance.exception.dto.ErrorDataDto;
 import com.starter.performance.exception.dto.ErrorResponseDto;
 import com.starter.performance.repository.MemberRepository;
 import com.starter.performance.security.JwtUtil;
@@ -38,8 +38,8 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.findByEmail(signUpRequestDto.getEmail())
             .ifPresent(member -> {
                 throw new CustomException(
-                    new ErrorResponseDto("409",
-                        new ErrorDataDto(ErrorType.EMAIL_IS_DUPLICATED_EXCEPTION.getErrorType())
+                    new ErrorResponseDto(409,
+                        new ErrorData(ErrorType.EMAIL_IS_DUPLICATED_EXCEPTION.getErrorType())
                     ),
                     HttpStatus.CONFLICT
                 );
@@ -48,8 +48,8 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.findByNickname(signUpRequestDto.getNickname())
             .ifPresent(member -> {
                 throw new CustomException(
-                    new ErrorResponseDto("409",
-                        new ErrorDataDto(ErrorType.NICKNAME_IS_DUPLICATED_EXCEPTION.getErrorType())
+                    new ErrorResponseDto(409,
+                        new ErrorData(ErrorType.NICKNAME_IS_DUPLICATED_EXCEPTION.getErrorType())
                     ),
                     HttpStatus.CONFLICT
                 );
@@ -71,16 +71,16 @@ public class MemberServiceImpl implements MemberService {
     public LoginResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         Member member = memberRepository.findByEmail(loginRequestDto.getEmail())
             .orElseThrow(() -> new CustomException(
-                new ErrorResponseDto("404",
-                    new ErrorDataDto(ErrorType.UNSUBSCRIBED_EMAIL_EXCEPTION.getErrorType())
+                new ErrorResponseDto(404,
+                    new ErrorData(ErrorType.UNSUBSCRIBED_EMAIL_EXCEPTION.getErrorType())
                 ),
                 HttpStatus.NOT_FOUND
             ));
 
         if (!bCryptPasswordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
             throw new CustomException(
-                new ErrorResponseDto("409",
-                    new ErrorDataDto(ErrorType.WRONG_PASSWORD_EXCEPTION.getErrorType())
+                new ErrorResponseDto(409,
+                    new ErrorData(ErrorType.WRONG_PASSWORD_EXCEPTION.getErrorType())
                 ),
                 HttpStatus.CONFLICT
             );

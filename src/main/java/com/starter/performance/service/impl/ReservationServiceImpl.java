@@ -18,7 +18,7 @@ import com.starter.performance.repository.PerformanceScheduleRepository;
 import com.starter.performance.repository.ReservationRepository;
 import com.starter.performance.service.ReservationService;
 import com.starter.performance.service.dto.ReservationResponseDto;
-import com.starter.performance.service.dto.ResponseDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

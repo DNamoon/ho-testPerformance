@@ -12,7 +12,7 @@ import com.starter.performance.repository.MemberRepository;
 import com.starter.performance.repository.ReservationRepository;
 import com.starter.performance.repository.ReviewRepository;
 import com.starter.performance.service.ReviewService;
-import com.starter.performance.service.dto.ResponseDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import com.starter.performance.service.dto.ReviewResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

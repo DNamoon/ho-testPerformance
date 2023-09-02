@@ -1,5 +1,6 @@
 package com.starter.performance.exception;
 
+import com.starter.performance.exception.dto.ErrorResponseDto;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,13 +13,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(AbstractException.class)
-    protected ResponseEntity<ErrorResponse> handleCustomException(AbstractException exception) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
+    protected ResponseEntity<ErrorResponseDto> handleCustomException(AbstractException exception) {
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
             .statusCode(exception.getStatusCode())
             .data(exception.getData())
             .build();
 
-        return new ResponseEntity<>(errorResponse,
+        return new ResponseEntity<>(errorResponseDto,
             Objects.requireNonNull(HttpStatus.resolve(exception.getStatusCode())));
     }
 }

@@ -1,4 +1,4 @@
-package com.starter.performance.service.dto;
+package com.starter.performance.controller.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

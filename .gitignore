@@ -36,7 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
-### application-test.yml ###
+### application-test.yml ### 계속 이 파일 사라짐.
 *.yml
 
 ### sql 패키지
