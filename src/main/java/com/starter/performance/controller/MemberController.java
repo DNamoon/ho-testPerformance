@@ -25,9 +25,9 @@ public class MemberController {
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequestDto signUpRequestDto) {
         return new ResponseEntity<>(
             ResponseDto.builder()
-                .statusCode("201")
+                .statusCode(201)
                 .message("회원가입 성공")
-                .data(memberService.signUp(signUpRequestDto))
+                .body(memberService.signUp(signUpRequestDto))
                 .build(),
 //            new ResponseDto(
 //                "201",
@@ -43,9 +43,9 @@ public class MemberController {
         HttpServletResponse response) {
         return new ResponseEntity<>(
             ResponseDto.builder()
-                .statusCode("200")
+                .statusCode(200)
                 .message("로그인 성공")
-                .data(memberService.login(loginRequestDto, response)),
+                .body(memberService.login(loginRequestDto, response)),
 //            new ResponseDto(
 //                "200",
 //                "로그인 성공",

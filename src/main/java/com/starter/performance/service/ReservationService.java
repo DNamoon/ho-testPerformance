@@ -1,8 +1,29 @@
 package com.starter.performance.service;
 
+import com.starter.performance.controller.dto.ReservationRequestDto;
+import com.starter.performance.domain.Name;
+import com.starter.performance.domain.PerformanceSchedule;
 import com.starter.performance.domain.Reservation;
-import java.util.Optional;
+import com.starter.performance.service.dto.ResponseDto;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ReservationService {
-//    Optional<Reservation> findOne(Long reservationId);
+
+    ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth);
+
+    // 예매 완료 후 확인 메일 보내기
+    void sendMail(String email, Reservation reservation);
+
+    ResponseDto showReservations(Authentication auth);
+
+    @Transactional
+    void updateTicket(Long performanceScheduleId, Integer ticket);
+
+    void checkReservationTicketNum(Integer ticket);
+
+    void checkReservationPossibleDate(PerformanceSchedule performanceSchedule, Name name);
+
+    void checkPerformanceState(PerformanceSchedule performanceSchedule);
+
 }

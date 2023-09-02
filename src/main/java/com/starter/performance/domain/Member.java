@@ -9,8 +9,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,44 +27,48 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(unique = true, length = 50, nullable = false)
-  private String email;
+    @Column(unique = true, length = 50, nullable = false)
+    private String email;
 
-  @Column(nullable = false)
-  private String password;
+    @Column(nullable = false)
+    private String password;
 
-  @Column(name = "phone_number", nullable = false)
-  private String phoneNumber;
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
 
-  @Column(nullable = false)
-  private String nickname;
+    @Column(nullable = false)
+    private String nickname;
 
-  @Column(name = "registered_date")
-  @CreatedDate
-  private LocalDateTime registeredDate;
+    @Column(name = "registered_date")
+    @CreatedDate
+    private LocalDateTime registeredDate;
 
-  private LocalDateTime modifiedDate;
+    private LocalDateTime modifiedDate;
 
-  private LocalDateTime withdrawalDate;
+    private LocalDateTime withdrawalDate;
 
-  @Enumerated(EnumType.STRING)
-  private Permission permission;
+    @Enumerated(EnumType.STRING)
+    private Permission permission;
 
-  private boolean emailAuth;
+    private boolean emailAuth;
 
-  private boolean sanctionWhether;
+    private boolean sanctionWhether;
 
-  @Builder
-  public Member(String email, String password, String phoneNumber,
-      String nickname, Permission permission) {
-    this.email = email;
-    this.password = password;
-    this.phoneNumber = phoneNumber;
-    this.nickname = nickname;
-    this.permission = Permission.MEMBER;
-  }
+    @OneToOne
+    @JoinColumn(name = "rating")
+    private Rating rating;
+
+    @Builder
+    public Member(String email, String password, String phoneNumber,
+        String nickname, Permission permission) {
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.nickname = nickname;
+        this.permission = Permission.MEMBER;
+    }
 }

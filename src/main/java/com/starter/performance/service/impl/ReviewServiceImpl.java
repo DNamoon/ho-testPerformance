@@ -30,7 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
 
-    private static final String MESSAGE = "후기 작성을 완료했습니다.";
+    private static final String REVIEW_MESSAGE = "후기 작성을 완료했습니다.";
 
 //    @Override
 //    public ResponseDto createReview(ReviewRequestDto reviewDto) {
@@ -93,9 +93,9 @@ public class ReviewServiceImpl implements ReviewService {
         Review savedReview = reviewRepository.save(review);
 
         return ResponseDto.builder()
-            .message(MESSAGE)
-            .statusCode(String.valueOf(HttpStatus.OK))
-            .data(ReviewResponseDto.builder().title(savedReview.getTitle()).build())
+            .statusCode(HttpStatus.OK.value())
+            .message(REVIEW_MESSAGE)
+            .body(ReviewResponseDto.builder().title(savedReview.getTitle()).build())
             .build();
     }
 

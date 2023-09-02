@@ -14,10 +14,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reservation {
@@ -38,7 +40,7 @@ public class Reservation {
     private String performanceName;
 
     @Column(nullable = false)
-    private Integer ticketQuantity;
+    private Integer reservedTicketNum;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
