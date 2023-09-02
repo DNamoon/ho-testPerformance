@@ -24,6 +24,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -101,13 +103,13 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ResponseDto showReservations(Authentication auth) {
+    public ResponseDto showReservations(Authentication auth, Pageable pageable) {
         List<ReservationResponseDto> dtoList = new ArrayList<>();
 
         String email = auth.getName();
         Member member = memberRepository.findByEmail(email).orElseThrow(IllegalArgumentException::new);
 
-        List<Reservation> list = reservationRepository.findAllByMember(member);
+        Page<Reservation> list = reservationRepository.findAllByMember(member, pageable);
 
         for (Reservation setReservation : list) {
             ReservationResponseDto dto = new ReservationResponseDto(

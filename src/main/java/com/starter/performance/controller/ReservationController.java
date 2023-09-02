@@ -5,6 +5,8 @@ import com.starter.performance.service.ReservationService;
 import com.starter.performance.service.dto.ResponseDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +30,9 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<ResponseDto> viewReservations(Authentication auth) {
-        ResponseDto responseDto = reservationService.showReservations(auth);
+    public ResponseEntity<ResponseDto> viewReservations(Authentication auth,
+        @PageableDefault(size = 7) Pageable pageable) {
+        ResponseDto responseDto = reservationService.showReservations(auth, pageable);
         return ResponseEntity.ok(responseDto);
     }
 }

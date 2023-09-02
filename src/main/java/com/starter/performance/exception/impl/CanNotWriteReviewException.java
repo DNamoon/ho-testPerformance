@@ -1,6 +1,7 @@
 package com.starter.performance.exception.impl;
 
 import com.starter.performance.exception.AbstractException;
+import com.starter.performance.exception.ErrorData;
 import com.starter.performance.exception.ReviewErrorCode;
 import org.springframework.http.HttpStatus;
 
@@ -12,8 +13,8 @@ public class CanNotWriteReviewException extends AbstractException {
     }
 
     @Override
-    public Object getData() {
-        return ReviewErrorCode.CAN_NOT_WRITE_REVIEW_EXCEPTION;
+    public ErrorData getData() {
+        return new ErrorData(ReviewErrorCode.CAN_NOT_WRITE_REVIEW_EXCEPTION.name());
     }
 
 }

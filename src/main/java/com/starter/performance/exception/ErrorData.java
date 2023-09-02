@@ -1,11 +1,12 @@
-package com.starter.performance.exception.dto;
+package com.starter.performance.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ErrorDataDto {
+public class ErrorData {
 
     private final String errorType;
+
 }

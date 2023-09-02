@@ -1,6 +1,7 @@
 package com.starter.performance.exception.impl;
 
 import com.starter.performance.exception.AbstractException;
+import com.starter.performance.exception.ErrorData;
 import com.starter.performance.exception.ReviewErrorCode;
 import org.springframework.http.HttpStatus;
 
@@ -12,7 +13,7 @@ public class OnlyOneReviewException extends AbstractException {
     }
 
     @Override
-    public Object getData() {
-        return ReviewErrorCode.ONLY_ONE_REVIEW_PER_RESERVATION_EXCEPTION;
+    public ErrorData getData() {
+        return new ErrorData(ReviewErrorCode.ONLY_ONE_REVIEW_PER_RESERVATION_EXCEPTION.name());
     }
 }
