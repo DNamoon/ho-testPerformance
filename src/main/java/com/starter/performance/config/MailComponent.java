@@ -15,7 +15,7 @@ public class MailComponent {
 
     private final JavaMailSender javaMailSender;
 
-    public boolean sendMail(String mail, String subject, String text) {
+    public boolean sendMail(String mail, String subject, StringBuilder text) {
 
         boolean result = false;
 
@@ -26,7 +26,7 @@ public class MailComponent {
                     new MimeMessageHelper(mimeMessage, true, "UTF-8");
                 mimeMessageHelper.setTo(mail);
                 mimeMessageHelper.setSubject(subject);
-                mimeMessageHelper.setText(text, true);
+                mimeMessageHelper.setText(String.valueOf(text), true);
             }
         };
 

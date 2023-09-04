@@ -1,16 +1,17 @@
 package com.starter.performance.service;
 
 import com.starter.performance.controller.dto.ReservationRequestDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import com.starter.performance.domain.Name;
 import com.starter.performance.domain.PerformanceSchedule;
 import com.starter.performance.domain.Reservation;
-import com.starter.performance.controller.dto.ResponseDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ReservationService {
 
+    @Transactional
     ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth);
 
     ResponseDto showReservations(Authentication auth, Pageable pageable);
@@ -20,6 +21,9 @@ public interface ReservationService {
 
     @Transactional
     void updateTicket(Long performanceScheduleId, Integer ticket);
+
+    @Transactional
+    void updateTicketForVIP(Long id, Integer ticket, Name name);
 
     void checkReservationTicketNum(Integer ticket);
 

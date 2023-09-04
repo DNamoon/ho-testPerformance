@@ -33,7 +33,9 @@ public class PerformanceSchedule {
 
     private LocalDateTime performanceDate;
 
-    private Integer ticket_quantity;
+    private Integer ticketQuantity;
+
+    private Integer initialTicketQuantity;
 
     @Enumerated(EnumType.STRING)
     private PerformanceStatus performanceStatus;

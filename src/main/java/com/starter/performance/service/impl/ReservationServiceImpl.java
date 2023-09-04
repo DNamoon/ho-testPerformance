@@ -2,12 +2,14 @@ package com.starter.performance.service.impl;
 
 import com.starter.performance.config.MailComponent;
 import com.starter.performance.controller.dto.ReservationRequestDto;
+import com.starter.performance.controller.dto.ResponseDto;
 import com.starter.performance.domain.Member;
 import com.starter.performance.domain.Name;
 import com.starter.performance.domain.PerformanceSchedule;
 import com.starter.performance.domain.PerformanceStatus;
 import com.starter.performance.domain.Reservation;
 import com.starter.performance.domain.ReservationStatus;
+import com.starter.performance.exception.impl.CanNotVipReservationException;
 import com.starter.performance.exception.impl.ExistReservationException;
 import com.starter.performance.exception.impl.NotPresentTicketException;
 import com.starter.performance.exception.impl.NotProperPerformanceStatusException;
@@ -18,7 +20,6 @@ import com.starter.performance.repository.PerformanceScheduleRepository;
 import com.starter.performance.repository.ReservationRepository;
 import com.starter.performance.service.ReservationService;
 import com.starter.performance.service.dto.ReservationResponseDto;
-import com.starter.performance.controller.dto.ResponseDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +76,10 @@ public class ReservationServiceImpl implements ReservationService {
         /** 예매 가능한 날짜인지 확인 */
         checkReservationPossibleDate(performanceSchedule, name);
 
-        /** 티켓 남아있는지 확인 */
-        updateTicket(performanceSchedule.getId(), ticket);
+        /** 티켓 남아있는지 확인 후 티켓 수량 변경 */
+        updateTicketForVIP(performanceSchedule.getId(), ticket, name);
+
+        LocalDateTime lo = LocalDateTime.now();
 
         Reservation reservation = Reservation.builder()
             .member(member)
@@ -86,7 +89,12 @@ public class ReservationServiceImpl implements ReservationService {
             .reservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()))
             .reservationStatus(ReservationStatus.YES)
             .reservationDate(LocalDateTime.now())
-//                LocalDateTime.parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:"))))
+//            .reservationDate(
+//                LocalDateTime.parse
+//                    (String.valueOf(LocalDateTime.now()), DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
+//            .reservationDate(
+//                LocalDateTime.parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
+//            )
             .build();
 
         log.info("ticketQuantity : " + dto.getReservedTicketNum());
@@ -115,8 +123,9 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         String subject = "[공연 예매 사이트] 예매가 무사히 완료되었습니다.";
-        String text = email + "님의 [" + savedReservation.getPerformanceName()
-            + "] 예매가 무사히 완료되었습니다. 자세한 내용은 예매목록보기에서 확인할 수 있습니다.";
+        StringBuilder text = new StringBuilder();
+        text.append(email).append("님의 [").append(savedReservation.getPerformanceName())
+            .append("] 예매가 무사히 완료되었습니다. 자세한 내용은 예매목록보기에서 확인할 수 있습니다.");
 
         mailComponent.sendMail(email, subject, text);
 
@@ -150,6 +159,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     // JPA 더티 체킹 - performanceSchedule의 티켓 수량 변경. (예매한 표만큼)
+
+    /**
+     * 일반 예매
+     */
     @Transactional
     @Override
     public void updateTicket(Long id, Integer ticket) {
@@ -157,8 +170,8 @@ public class ReservationServiceImpl implements ReservationService {
         PerformanceSchedule performanceSchedule = entityManager
             .find(PerformanceSchedule.class, id);
 
-        int leftTicket = performanceSchedule.getTicket_quantity() - ticket;
-        log.info("db에 남아있는 티켓 수 : " + performanceSchedule.getTicket_quantity());
+        int leftTicket = performanceSchedule.getTicketQuantity() - ticket;
+        log.info("db에 남아있는 티켓 수 : " + performanceSchedule.getTicketQuantity());
 
         log.info("회원이 예매한 티켓 수 : " + ticket);
 
@@ -168,7 +181,44 @@ public class ReservationServiceImpl implements ReservationService {
             throw new NotPresentTicketException();
         }
 
-        performanceSchedule.setTicket_quantity(leftTicket);
+        performanceSchedule.setTicketQuantity(leftTicket);
+
+    }
+
+    @Transactional
+    @Override
+    public void updateTicketForVIP(Long id, Integer ticket, Name name) {
+
+        PerformanceSchedule performanceSchedule = entityManager
+            .find(PerformanceSchedule.class, id);
+
+        int leftTicket = performanceSchedule.getTicketQuantity() - ticket;
+        int ticketForVip = performanceSchedule.getInitialTicketQuantity() * 8 / 10;
+
+        log.info("ticketForVip 티켓: " + ticketForVip);
+        log.info("leftTicket 티켓: " + leftTicket);
+
+        if (name.equals(Name.VIP)) {
+            if (ticketForVip > leftTicket) {
+                log.info("vip티켓은 구매 못함");
+            } else {
+                updateTicket(id, ticket);
+                log.info("vip 티켓 예매");
+                return;
+            }
+
+            if (performanceSchedule.getPerformanceDate().minusDays(STANDARD_POSSIBLE_DATE)
+                .withHour(0).withMinute(0).isBefore(LocalDateTime.now())) {
+
+                log.info("vip회원 일반 티켓 예매");
+                updateTicket(id, ticket);
+
+            } else {
+                throw new CanNotVipReservationException();
+            }
+        } else if (name.equals(Name.STANDARD)) {
+            updateTicket(id, ticket);
+        }
 
     }
 
@@ -189,16 +239,13 @@ public class ReservationServiceImpl implements ReservationService {
             possibleReservationDate = STANDARD_POSSIBLE_DATE;
         }
 
-        LocalDateTime performanceDate = performanceSchedule.getPerformanceDate()
+        LocalDateTime possibleDate = performanceSchedule.getPerformanceDate()
             .minusDays(possibleReservationDate).withHour(0).withMinute(0);
-        LocalDateTime reservationPossibleDate = LocalDateTime.now();
+        LocalDateTime reservationTime = LocalDateTime.now();
 
-        log.info("예매 가능 날짜 : " + performanceDate);
+        log.info("예매 가능 날짜 : " + possibleDate);
 
-        log.info("isBefore()로 찍히는 날짜 : "
-            + reservationPossibleDate.isBefore(performanceDate));
-
-        if (reservationPossibleDate.isBefore(performanceDate)) {
+        if (reservationTime.isBefore(possibleDate)) {
             throw new NotProperReservationDateException();
         }
 

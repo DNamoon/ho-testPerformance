@@ -6,5 +6,6 @@ public enum ReservationErrorCode {
     NOT_PROPER_RESERVATION_DATE_EXCEPTION,  // 예매 가능한 날짜 x
     NOT_PROPER_PERFORMANCE_STATUS_EXCEPTION,// 공연이 예매 불가능 상태 - performance_status != TICKETING
     EXIST_RESERVATION_EXCEPTION,            // 이미 예매 내역이 있는 상태 -> 예매 불가
+    CAN_NOT_VIP_RESERVATION_EXCEPTION,      // VIP 표 없어서 구매 못하는 상황
 
 }
