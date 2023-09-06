@@ -47,11 +47,11 @@ public class ReservationController {
         return ResponseEntity.ok(responseDto);
     }
 
-    // 예매 수정하기 - 만들긴 했는데 예매 취소하고 다시 예매하게 하자.
-//    @PutMapping("/reservations")
-//    public ResponseEntity<ResponseDto> changeReservation(Authentication auth,
-//        @RequestBody @Valid ChangeReservationDto dto) {
-//        ResponseDto responseDto = reservationService.changeReservation(auth, dto);
-//        return ResponseEntity.ok(responseDto);
-//    }
+    // 예매 수정하기 - refactor 완료
+    @PutMapping("/reservations")
+    public ResponseEntity<ResponseDto> changeReservation(Authentication auth,
+        @RequestBody @Valid ChangeReservationDto dto) {
+        ResponseDto responseDto = reservationService.changeReservation(auth, dto);
+        return ResponseEntity.ok(responseDto);
+    }
 }

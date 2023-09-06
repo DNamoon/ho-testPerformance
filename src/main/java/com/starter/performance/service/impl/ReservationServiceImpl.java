@@ -1,6 +1,7 @@
 package com.starter.performance.service.impl;
 
 import com.starter.performance.config.MailComponent;
+import com.starter.performance.controller.dto.ChangeReservationDto;
 import com.starter.performance.controller.dto.ReservationRequestDto;
 import com.starter.performance.controller.dto.ResponseDto;
 import com.starter.performance.domain.Member;
@@ -51,7 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final static String RESERVATION_MESSAGE = "예매가 완료되었습니다.";
     private final static String SHOW_MESSAGE = "예매 목록을 불러옵니다.";
     private final static String CANCEL_MESSAGE = "예매가 취소되었습니다.";
-//    private final static String CHANGE_MESSAGE = "예매 정보를 수정했습니다. 예매 티켓 수가 변동됩니다.";
+    private final static String CHANGE_MESSAGE = "예매 정보를 수정했습니다. 예매 티켓 수가 변동됩니다.";
 
     private Long possibleReservationDate;
     private final static Long VIP_POSSIBLE_DATE = 7L;
@@ -192,46 +193,46 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     // 예매 수정하기
-//    @Transactional
-//    @Override
-//    public ResponseDto changeReservation(Authentication auth, ChangeReservationDto dto) {
-//        String email = auth.getName();
-//        int newTicketNum = Integer.parseInt(dto.getReservedTicketNum());
-//        Member member = memberRepository.findByEmail(email).orElseThrow(IllegalAccessError::new);
-//
-//        Reservation reservation = entityManager.find(Reservation.class, dto.getReservationId());
-//
-//        /** 예매 정보의 회원정보와 로그인 회원 일치 여부 확인 */
-//        checkReservationAndMember(reservation, member);
-//
-//        /** 예매가 되어있는지 확인*/
-//        checkCanceledReservation(reservation);
-//
-//        if (!reservation.getReservedTicketNum().equals(newTicketNum)) {
-//            PerformanceSchedule performanceSchedule = entityManager.find(PerformanceSchedule.class,
-//                reservation.getPerformanceSchedule().getId());
-//
-//            performanceSchedule.setTicketQuantity(
-//                performanceSchedule.getTicketQuantity() + reservation.getReservedTicketNum());
-//
-//            updateTicket(reservation.getPerformanceSchedule().getId(), Integer.parseInt(dto.getReservedTicketNum()),
-//                member.getRating().getName());
-//
-//            reservation.setReservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()));
-//        }
-//
-//        return ResponseDto.builder()
-//            .statusCode(HttpStatus.OK.value())
-//            .message(CHANGE_MESSAGE)
-//            .body(new ReservationResponseDto(
-//                reservation.getPerformanceName(),
-//                reservation.getReservedTicketNum(),
-//                reservation.getReservationStatus(),
-//                reservation.getPerformanceDate(),
-//                reservation.getReservationDate()
-//            ))
-//            .build();
-//    }
+    @Transactional
+    @Override
+    public ResponseDto changeReservation(Authentication auth, ChangeReservationDto dto) {
+        String email = auth.getName();
+        int newTicketNum = Integer.parseInt(dto.getReservedTicketNum());
+        Member member = memberRepository.findByEmail(email).orElseThrow(IllegalAccessError::new);
+
+        Reservation reservation = entityManager.find(Reservation.class, dto.getReservationId());
+
+        /** 예매 정보의 회원정보와 로그인 회원 일치 여부 확인 */
+        checkReservationAndMember(reservation, member);
+
+        /** 예매가 되어있는지 확인*/
+        checkCanceledReservation(reservation);
+
+        if (!reservation.getReservedTicketNum().equals(newTicketNum)) {
+            PerformanceSchedule performanceSchedule = entityManager.find(PerformanceSchedule.class,
+                reservation.getPerformanceSchedule().getId());
+
+            performanceSchedule.setTicketQuantity(
+                performanceSchedule.getTicketQuantity() + reservation.getReservedTicketNum());
+
+            updateTicket(reservation.getPerformanceSchedule().getId(), Integer.parseInt(dto.getReservedTicketNum()),
+                member.getRating().getName());
+
+            reservation.setReservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()));
+        }
+
+        return ResponseDto.builder()
+            .statusCode(HttpStatus.OK.value())
+            .message(CHANGE_MESSAGE)
+            .body(new ReservationResponseDto(
+                reservation.getPerformanceName(),
+                reservation.getReservedTicketNum(),
+                reservation.getReservationStatus(),
+                reservation.getPerformanceDate(),
+                reservation.getReservationDate()
+            ))
+            .build();
+    }
 
     // JPA 더티 체킹 - performanceSchedule의 티켓 수량 변경. (예매한 표만큼)
 
