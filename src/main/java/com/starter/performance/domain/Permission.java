@@ -1,5 +1,5 @@
 package com.starter.performance.domain;
 
 public enum Permission {
-    MEMBER, ADMIN
+    ROLE_MEMBER, ROLE_ADMIN
 }

@@ -69,6 +69,6 @@ public class Member {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.nickname = nickname;
-        this.permission = Permission.MEMBER;
+        this.permission = Permission.ROLE_MEMBER;
     }
 }

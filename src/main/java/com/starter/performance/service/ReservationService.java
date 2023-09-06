@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ReservationService {
 
     @Transactional
-    ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth);
+    ResponseDto makeReservation(Long performanceId, Long performanceScheduleId, ReservationRequestDto dto,
+        Authentication auth);
 
     ResponseDto showReservations(Authentication auth, Pageable pageable);
 
@@ -24,6 +25,8 @@ public interface ReservationService {
 
     @Transactional
     void updateTicketForVIP(Long id, Integer ticket, Name name);
+
+    void checkPerformance(PerformanceSchedule performanceSchedule, Long performanceId);
 
     void checkReservationTicketNum(Integer ticket);
 

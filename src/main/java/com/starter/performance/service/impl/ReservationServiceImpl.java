@@ -15,6 +15,7 @@ import com.starter.performance.exception.impl.NotPresentTicketException;
 import com.starter.performance.exception.impl.NotProperPerformanceStatusException;
 import com.starter.performance.exception.impl.NotProperReservationDateException;
 import com.starter.performance.exception.impl.NotProperTicketNumException;
+import com.starter.performance.exception.impl.NotValidPerformanceException;
 import com.starter.performance.repository.MemberRepository;
 import com.starter.performance.repository.PerformanceScheduleRepository;
 import com.starter.performance.repository.ReservationRepository;
@@ -53,7 +54,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final static Long STANDARD_POSSIBLE_DATE = 6L;
 
     @Override
-    public ResponseDto makeReservation(Long performanceScheduleId, ReservationRequestDto dto, Authentication auth) {
+    public ResponseDto makeReservation(Long performanceId, Long performanceScheduleId, ReservationRequestDto dto,
+        Authentication auth) {
 
         String email = auth.getName();
         Integer ticket = Integer.parseInt(dto.getReservedTicketNum());
@@ -67,6 +69,9 @@ public class ReservationServiceImpl implements ReservationService {
         PerformanceSchedule performanceSchedule = performanceScheduleRepository.findById(performanceScheduleId)
             .orElseThrow(IllegalArgumentException::new);
 
+        /** 공연 정보가 올바른지 확인 */
+        checkPerformance(performanceSchedule, performanceId);
+
         /** 이미 예매한 정보가 있는지 확인 */
         existReservation(member, performanceSchedule);
 
@@ -79,8 +84,6 @@ public class ReservationServiceImpl implements ReservationService {
         /** 티켓 남아있는지 확인 후 티켓 수량 변경 */
         updateTicketForVIP(performanceSchedule.getId(), ticket, name);
 
-        LocalDateTime lo = LocalDateTime.now();
-
         Reservation reservation = Reservation.builder()
             .member(member)
             .performanceSchedule(performanceSchedule)
@@ -89,12 +92,6 @@ public class ReservationServiceImpl implements ReservationService {
             .reservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()))
             .reservationStatus(ReservationStatus.YES)
             .reservationDate(LocalDateTime.now())
-//            .reservationDate(
-//                LocalDateTime.parse
-//                    (String.valueOf(LocalDateTime.now()), DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
-//            .reservationDate(
-//                LocalDateTime.parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
-//            )
             .build();
 
         log.info("ticketQuantity : " + dto.getReservedTicketNum());
@@ -220,6 +217,13 @@ public class ReservationServiceImpl implements ReservationService {
             updateTicket(id, ticket);
         }
 
+    }
+
+    @Override
+    public void checkPerformance(PerformanceSchedule performanceSchedule, Long performanceId) {
+        if (!performanceId.equals(performanceSchedule.getPerformance().getId())) {
+            throw new NotValidPerformanceException();
+        }
     }
 
     // 예매 티켓 수가 1 또는 2매가 아니면 예외 처리

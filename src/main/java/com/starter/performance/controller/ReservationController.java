@@ -1,8 +1,8 @@
 package com.starter.performance.controller;
 
 import com.starter.performance.controller.dto.ReservationRequestDto;
-import com.starter.performance.service.ReservationService;
 import com.starter.performance.controller.dto.ResponseDto;
+import com.starter.performance.service.ReservationService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +21,11 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/performance/performanceId/{performanceScheduleId}/reservations")
+    @PostMapping("/performances/{performanceId}/{performanceScheduleId}/reservation")
     public ResponseEntity<ResponseDto> createReservation(@PathVariable Long performanceScheduleId,
-        @RequestBody @Valid ReservationRequestDto dto,
+        @PathVariable Long performanceId, @RequestBody @Valid ReservationRequestDto dto,
         Authentication auth) {
-        ResponseDto responseDto = reservationService.makeReservation(performanceScheduleId, dto, auth);
+        ResponseDto responseDto = reservationService.makeReservation(performanceId, performanceScheduleId, dto, auth);
         return ResponseEntity.ok(responseDto);
     }
 
