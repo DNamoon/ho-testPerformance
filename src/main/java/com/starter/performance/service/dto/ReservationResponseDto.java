@@ -1,5 +1,6 @@
 package com.starter.performance.service.dto;
 
+import com.starter.performance.domain.ReservationStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ public class ReservationResponseDto {
 
     private String performanceName;
     private Integer reservedTicketNum;
+    private ReservationStatus reservationStatus;
     private LocalDateTime performanceDate;
     private LocalDateTime reservationDate;
 }

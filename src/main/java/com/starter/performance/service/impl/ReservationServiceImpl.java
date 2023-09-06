@@ -10,11 +10,13 @@ import com.starter.performance.domain.PerformanceStatus;
 import com.starter.performance.domain.Reservation;
 import com.starter.performance.domain.ReservationStatus;
 import com.starter.performance.exception.impl.CanNotVipReservationException;
+import com.starter.performance.exception.impl.CanceledReservationException;
 import com.starter.performance.exception.impl.ExistReservationException;
 import com.starter.performance.exception.impl.NotPresentTicketException;
 import com.starter.performance.exception.impl.NotProperPerformanceStatusException;
 import com.starter.performance.exception.impl.NotProperReservationDateException;
 import com.starter.performance.exception.impl.NotProperTicketNumException;
+import com.starter.performance.exception.impl.NotValidMember;
 import com.starter.performance.exception.impl.NotValidPerformanceException;
 import com.starter.performance.repository.MemberRepository;
 import com.starter.performance.repository.PerformanceScheduleRepository;
@@ -48,6 +50,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final static String RESERVATION_MESSAGE = "예매가 완료되었습니다.";
     private final static String SHOW_MESSAGE = "예매 목록을 불러옵니다.";
+    private final static String CANCEL_MESSAGE = "예매가 취소되었습니다.";
+//    private final static String CHANGE_MESSAGE = "예매 정보를 수정했습니다. 예매 티켓 수가 변동됩니다.";
 
     private Long possibleReservationDate;
     private final static Long VIP_POSSIBLE_DATE = 7L;
@@ -82,7 +86,7 @@ public class ReservationServiceImpl implements ReservationService {
         checkReservationPossibleDate(performanceSchedule, name);
 
         /** 티켓 남아있는지 확인 후 티켓 수량 변경 */
-        updateTicketForVIP(performanceSchedule.getId(), ticket, name);
+        updateTicket(performanceSchedule.getId(), ticket, name);
 
         Reservation reservation = Reservation.builder()
             .member(member)
@@ -106,6 +110,7 @@ public class ReservationServiceImpl implements ReservationService {
             .body(new ReservationResponseDto(
                 savedReservation.getPerformanceName(),
                 savedReservation.getReservedTicketNum(),
+                savedReservation.getReservationStatus(),
                 savedReservation.getPerformanceDate(),
                 savedReservation.getReservationDate()
             ))
@@ -138,12 +143,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         Page<Reservation> list = reservationRepository.findAllByMember(member, pageable);
 
-        for (Reservation setReservation : list) {
+        for (Reservation savedReservation : list) {
             ReservationResponseDto dto = new ReservationResponseDto(
-                setReservation.getPerformanceName(),
-                setReservation.getReservedTicketNum(),
-                setReservation.getPerformanceDate(),
-                setReservation.getReservationDate());
+                savedReservation.getPerformanceName(),
+                savedReservation.getReservedTicketNum(),
+                savedReservation.getReservationStatus(),
+                savedReservation.getPerformanceDate(),
+                savedReservation.getReservationDate());
 
             dtoList.add(dto);
         }
@@ -155,6 +161,78 @@ public class ReservationServiceImpl implements ReservationService {
             .build();
     }
 
+    // 예매 취소하기
+    @Transactional
+    @Override
+    public ResponseDto cancelReservation(Authentication auth, Long reservationId) {
+
+        Reservation reservation = entityManager.find(Reservation.class, reservationId);
+        String email = auth.getName();
+        Member member = memberRepository.findByEmail(email).orElseThrow(IllegalAccessError::new);
+
+        /** 예매 정보의 회원정보와 로그인 회원 일치 여부 확인 */
+        checkReservationAndMember(reservation, member);
+
+        /** 예매가 되어있는지 확인*/
+        checkCanceledReservation(reservation);
+
+        reservation.setReservationStatus(ReservationStatus.NO);
+
+        return ResponseDto.builder()
+            .statusCode(HttpStatus.OK.value())
+            .message(CANCEL_MESSAGE)
+            .body(new ReservationResponseDto(
+                reservation.getPerformanceName(),
+                reservation.getReservedTicketNum(),
+                reservation.getReservationStatus(),
+                reservation.getPerformanceDate(),
+                reservation.getReservationDate()
+            ))
+            .build();
+    }
+
+    // 예매 수정하기
+//    @Transactional
+//    @Override
+//    public ResponseDto changeReservation(Authentication auth, ChangeReservationDto dto) {
+//        String email = auth.getName();
+//        int newTicketNum = Integer.parseInt(dto.getReservedTicketNum());
+//        Member member = memberRepository.findByEmail(email).orElseThrow(IllegalAccessError::new);
+//
+//        Reservation reservation = entityManager.find(Reservation.class, dto.getReservationId());
+//
+//        /** 예매 정보의 회원정보와 로그인 회원 일치 여부 확인 */
+//        checkReservationAndMember(reservation, member);
+//
+//        /** 예매가 되어있는지 확인*/
+//        checkCanceledReservation(reservation);
+//
+//        if (!reservation.getReservedTicketNum().equals(newTicketNum)) {
+//            PerformanceSchedule performanceSchedule = entityManager.find(PerformanceSchedule.class,
+//                reservation.getPerformanceSchedule().getId());
+//
+//            performanceSchedule.setTicketQuantity(
+//                performanceSchedule.getTicketQuantity() + reservation.getReservedTicketNum());
+//
+//            updateTicket(reservation.getPerformanceSchedule().getId(), Integer.parseInt(dto.getReservedTicketNum()),
+//                member.getRating().getName());
+//
+//            reservation.setReservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()));
+//        }
+//
+//        return ResponseDto.builder()
+//            .statusCode(HttpStatus.OK.value())
+//            .message(CHANGE_MESSAGE)
+//            .body(new ReservationResponseDto(
+//                reservation.getPerformanceName(),
+//                reservation.getReservedTicketNum(),
+//                reservation.getReservationStatus(),
+//                reservation.getPerformanceDate(),
+//                reservation.getReservationDate()
+//            ))
+//            .build();
+//    }
+
     // JPA 더티 체킹 - performanceSchedule의 티켓 수량 변경. (예매한 표만큼)
 
     /**
@@ -162,10 +240,10 @@ public class ReservationServiceImpl implements ReservationService {
      */
     @Transactional
     @Override
-    public void updateTicket(Long id, Integer ticket) {
+    public void updateTicketForStandard(Long performanceScheduleId, Integer ticket) {
 
         PerformanceSchedule performanceSchedule = entityManager
-            .find(PerformanceSchedule.class, id);
+            .find(PerformanceSchedule.class, performanceScheduleId);
 
         int leftTicket = performanceSchedule.getTicketQuantity() - ticket;
         log.info("db에 남아있는 티켓 수 : " + performanceSchedule.getTicketQuantity());
@@ -184,10 +262,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public void updateTicketForVIP(Long id, Integer ticket, Name name) {
+    public void updateTicket(Long performanceScheduleId, Integer ticket, Name name) {
 
         PerformanceSchedule performanceSchedule = entityManager
-            .find(PerformanceSchedule.class, id);
+            .find(PerformanceSchedule.class, performanceScheduleId);
 
         int leftTicket = performanceSchedule.getTicketQuantity() - ticket;
         int ticketForVip = performanceSchedule.getInitialTicketQuantity() * 8 / 10;
@@ -199,7 +277,7 @@ public class ReservationServiceImpl implements ReservationService {
             if (ticketForVip > leftTicket) {
                 log.info("vip티켓은 구매 못함");
             } else {
-                updateTicket(id, ticket);
+                updateTicketForStandard(performanceScheduleId, ticket);
                 log.info("vip 티켓 예매");
                 return;
             }
@@ -208,13 +286,13 @@ public class ReservationServiceImpl implements ReservationService {
                 .withHour(0).withMinute(0).isBefore(LocalDateTime.now())) {
 
                 log.info("vip회원 일반 티켓 예매");
-                updateTicket(id, ticket);
+                updateTicketForStandard(performanceScheduleId, ticket);
 
             } else {
                 throw new CanNotVipReservationException();
             }
         } else if (name.equals(Name.STANDARD)) {
-            updateTicket(id, ticket);
+            updateTicketForStandard(performanceScheduleId, ticket);
         }
 
     }
@@ -271,6 +349,22 @@ public class ReservationServiceImpl implements ReservationService {
             member, performanceSchedule, ReservationStatus.YES
         )) {
             throw new ExistReservationException();
+        }
+    }
+
+    // 예매한 회원이 맞는지 확인
+    @Override
+    public void checkReservationAndMember(Reservation reservation, Member member) {
+        if (!member.equals(reservation.getMember())) {
+            throw new NotValidMember();
+        }
+    }
+
+    // 취소된 예매인지 확인
+    @Override
+    public void checkCanceledReservation(Reservation reservation) {
+        if ((ReservationStatus.NO).equals(reservation.getReservationStatus())) {
+            throw new CanceledReservationException();
         }
     }
 
