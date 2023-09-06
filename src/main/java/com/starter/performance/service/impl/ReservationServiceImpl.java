@@ -266,7 +266,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     // 만약 이미 예매한 정보가 reservation 테이블에 있는지 확인 - 있다면 예매 진행 불가
     public void existReservation(Member member, PerformanceSchedule performanceSchedule) {
-        if (reservationRepository.existsByMemberAndPerformanceSchedule(member, performanceSchedule)) {
+
+        if (reservationRepository.existsByMemberAndPerformanceScheduleAndReservationStatus(
+            member, performanceSchedule, ReservationStatus.YES
+        )) {
             throw new ExistReservationException();
         }
     }
