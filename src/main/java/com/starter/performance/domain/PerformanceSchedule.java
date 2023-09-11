@@ -4,39 +4,47 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PerformanceSchedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
+    private LocalDateTime performanceDate;
+    private int ticketQuantity;
+    private int initialTicketQuantity;
+    @Enumerated(EnumType.STRING)
+    private PerformanceStatus performanceStatus;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance")
     private Performance performance;
 
-    private LocalDateTime performanceDate;
+    @Builder
+    private PerformanceSchedule(Long id, LocalDateTime performanceDate, int ticketQuantity,
+        int initialTicketQuantity,PerformanceStatus performanceStatus, Performance performance) {
+        this.id = id;
+        this.performanceDate = performanceDate;
+        this.ticketQuantity = ticketQuantity;
+        this.initialTicketQuantity = initialTicketQuantity;
+        this.performanceStatus = PerformanceStatus.STAND_BY;
+        this.performance = performance;
+    }
 
-    private Integer ticketQuantity;
+    public void updateTicketQuantity(int ticketQuantity) {
+        this.ticketQuantity = ticketQuantity;
+    }
 
-    private Integer initialTicketQuantity;
-
-    @Enumerated(EnumType.STRING)
-    private PerformanceStatus performanceStatus;
 }

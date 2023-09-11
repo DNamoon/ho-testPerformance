@@ -35,7 +35,7 @@ public class MailComponent {
             result = true;
 
         } catch (Exception exception) {
-            log.info("메일 전송 실패 : " + exception.getMessage());
+            log.error("메일 전송 실패 : " + exception.getMessage());
         }
 
         return result;

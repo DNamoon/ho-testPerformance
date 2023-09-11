@@ -14,12 +14,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Builder
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reservation {
@@ -52,4 +50,11 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDateTime reservationDate;
 
+    public void updateReservedTicketNum(Integer reservedTicketNum) {
+        this.reservedTicketNum = reservedTicketNum;
+    }
+
+    public void updateReservationStatus(ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
 }

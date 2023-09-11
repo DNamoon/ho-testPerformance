@@ -5,7 +5,7 @@ import com.starter.performance.exception.ErrorData;
 import com.starter.performance.exception.ReservationErrorCode;
 import org.springframework.http.HttpStatus;
 
-public class NotValidMember extends AbstractException {
+public class NotValidReservationMemberException extends AbstractException {
 
     @Override
     public int getStatusCode() {
@@ -14,6 +14,6 @@ public class NotValidMember extends AbstractException {
 
     @Override
     public ErrorData getData() {
-        return new ErrorData(ReservationErrorCode.NOT_VALID_MEMBER.name());
+        return new ErrorData(ReservationErrorCode.NOT_VALID_RESERVATION_MEMBER_EXCEPTION.name());
     }
 }

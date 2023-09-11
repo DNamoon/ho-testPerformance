@@ -8,6 +8,7 @@ public enum ReservationErrorCode {
     EXIST_RESERVATION_EXCEPTION,            // 이미 예매 내역이 있는 상태 -> 예매 불가
     CAN_NOT_VIP_RESERVATION_EXCEPTION,      // VIP 표 없어서 구매 못하는 상황
     NOT_VALID_PERFORMANCE_EXCEPTION,        // 올바른 공연 정보가 아닐 때
-    NOT_VALID_MEMBER,                       // 예매한 회원이 아닌 다른 회원이 취소 요청
+    NOT_VALID_RESERVATION_MEMBER_EXCEPTION, // 예매한 회원이 아닌 다른 회원이 취소 요청
     CANCELED_RESERVATION_EXCEPTION,         // 취소된 예매 내역을 수정/취소하려고 할 때
+    NOT_EXIST_SUITABLE_DATA_EXCEPTION,
 }

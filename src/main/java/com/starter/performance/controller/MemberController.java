@@ -58,6 +58,6 @@ public class MemberController {
 //    리뷰를 등록한 사용자의 이메일을 잘 받아오는지 확인하기 위한 임시 코드
 //    @PostMapping("/review")
 //    public ResponseEntity<String> review(Authentication authentication) {
-//        return ResponseEntity.ok().body(authentication.getName() + "의 리뷰 등록 완료");
+//        return ResponseEntity.ok().body(authentication.getRatingName() + "의 리뷰 등록 완료");
 //    }
 }

@@ -1,6 +1,6 @@
 package com.starter.performance.domain;
 
-public enum Name {
+public enum RatingName {
     STANDARD, VIP
 }
 

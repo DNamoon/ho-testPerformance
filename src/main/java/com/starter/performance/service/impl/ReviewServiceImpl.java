@@ -66,7 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ResponseDto registerReviewV2(ReviewRequestDto reviewDto, Long reservationId, Authentication auth) {
 
-        log.info("auth.getName() : " + auth.getName());
+        log.info("auth.getRatingName() : " + auth.getName());
         log.info("auth.getPrincipal() : " + auth.getPrincipal().toString());
 
         String email = auth.getName();
