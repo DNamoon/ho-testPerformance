@@ -34,18 +34,12 @@ public class Reservation {
     @JoinColumn(name = "performance_schedule")
     private PerformanceSchedule performanceSchedule;
 
-    @Column(nullable = false, length = 100)
-    private String performanceName;
-
     @Column(nullable = false)
     private Integer reservedTicketNum;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ReservationStatus reservationStatus;
-
-    @Column(nullable = false)
-    private LocalDateTime performanceDate;
 
     @Column(nullable = false)
     private LocalDateTime reservationDate;

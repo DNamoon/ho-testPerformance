@@ -91,7 +91,6 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = Reservation.builder()
             .member(member)
             .performanceSchedule(performanceSchedule)
-            .performanceDate(performanceSchedule.getPerformanceDate())
             .reservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()))
             .reservationStatus(ReservationStatus.YES)
             .reservationDate(LocalDateTime.now())
@@ -132,7 +131,7 @@ public class ReservationServiceImpl implements ReservationService {
                 savedReservation.getPerformanceSchedule().getPerformance().getName(),
                 savedReservation.getReservedTicketNum(),
                 savedReservation.getReservationStatus(),
-                savedReservation.getPerformanceDate(),
+                savedReservation.getPerformanceSchedule().getPerformanceDate(),
                 savedReservation.getReservationDate());
 
             dtoList.add(dto);
@@ -177,7 +176,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getPerformanceSchedule().getPerformance().getName(),
                 reservation.getReservedTicketNum(),
                 reservation.getReservationStatus(),
-                reservation.getPerformanceDate(),
+                reservation.getPerformanceSchedule().getPerformanceDate(),
                 reservation.getReservationDate()
             ))
             .build();
@@ -221,7 +220,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getPerformanceSchedule().getPerformance().getName(),
                 reservation.getReservedTicketNum(),
                 reservation.getReservationStatus(),
-                reservation.getPerformanceDate(),
+                reservation.getPerformanceSchedule().getPerformanceDate(),
                 reservation.getReservationDate()
             ))
             .build();
