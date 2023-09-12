@@ -91,7 +91,6 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = Reservation.builder()
             .member(member)
             .performanceSchedule(performanceSchedule)
-            .performanceName(performanceSchedule.getPerformance().getName())
             .performanceDate(performanceSchedule.getPerformanceDate())
             .reservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()))
             .reservationStatus(ReservationStatus.YES)
@@ -110,7 +109,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         String subject = "[공연 예매 사이트] 예매가 무사히 완료되었습니다.";
         StringBuilder text = new StringBuilder();
-        text.append(email).append("님의 [").append(savedReservation.getPerformanceName())
+        text.append(email).append("님의 [").append(savedReservation.getPerformanceSchedule().getPerformance().getName())
             .append("] 예매가 무사히 완료되었습니다. 자세한 내용은 예매목록보기에서 확인할 수 있습니다.");
 
         mailComponent.sendMail(email, subject, text);
