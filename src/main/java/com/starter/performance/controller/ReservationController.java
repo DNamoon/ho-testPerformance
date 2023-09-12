@@ -45,7 +45,7 @@ public class ReservationController {
                 savedReservation.getPerformanceSchedule().getPerformance().getName(),
                 savedReservation.getReservedTicketNum(),
                 savedReservation.getReservationStatus(),
-                savedReservation.getPerformanceDate(),
+                savedReservation.getPerformanceSchedule().getPerformanceDate(),
                 savedReservation.getReservationDate()
             ))
             .build();
