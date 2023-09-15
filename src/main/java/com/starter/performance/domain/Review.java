@@ -1,7 +1,10 @@
 package com.starter.performance.domain;
 
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,4 +41,32 @@ public class Review {
     @Column(nullable = false, length = 1000)
     private String content;
 
+    @Column(nullable = false)
+    private LocalDateTime writingDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private ReviewStatus reviewStatus;
+
+    private LocalDateTime deleteDate;
+
+    public void updateReviewStatus(ReviewStatus reviewStatus) {
+        this.reviewStatus = reviewStatus;
+    }
+
+    public void updateDeleteDate(LocalDateTime deleteDate) {
+        this.deleteDate = deleteDate;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateWritingDate(LocalDateTime writingDate) {
+        this.writingDate = writingDate;
+    }
 }
