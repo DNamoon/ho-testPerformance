@@ -1,7 +1,6 @@
 package com.starter.performance.service.impl;
 
 import com.starter.performance.config.MailComponent;
-import com.starter.performance.controller.dto.ChangeReservationDto;
 import com.starter.performance.controller.dto.ReservationRequestDto;
 import com.starter.performance.controller.dto.ResponseDto;
 import com.starter.performance.domain.Member;
@@ -24,6 +23,8 @@ import com.starter.performance.repository.MemberRepository;
 import com.starter.performance.repository.PerformanceScheduleRepository;
 import com.starter.performance.repository.ReservationRepository;
 import com.starter.performance.service.ReservationService;
+import com.starter.performance.service.dto.CancelReservationDto;
+import com.starter.performance.service.dto.ReservationInfoDto;
 import com.starter.performance.service.dto.ReservationResponseDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -119,7 +120,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     @Override
     public ResponseDto showReservations(Authentication auth, Pageable pageable) {
-        List<ReservationResponseDto> dtoList = new ArrayList<>();
+        List<ReservationInfoDto> dtoList = new ArrayList<>();
 
         String email = auth.getName();
         Member member = memberRepository.findByEmail(email).orElseThrow(NotExistSuitableDataException::new);
@@ -127,12 +128,14 @@ public class ReservationServiceImpl implements ReservationService {
         Page<Reservation> list = reservationRepository.findAllByMember(member, pageable);
 
         for (Reservation savedReservation : list) {
-            ReservationResponseDto dto = new ReservationResponseDto(
+            ReservationInfoDto dto = new ReservationInfoDto(
                 savedReservation.getPerformanceSchedule().getPerformance().getName(),
                 savedReservation.getReservedTicketNum(),
                 savedReservation.getReservationStatus(),
                 savedReservation.getPerformanceSchedule().getPerformanceDate(),
-                savedReservation.getReservationDate());
+                savedReservation.getReservationDate(),
+                savedReservation.getCancelDate()
+            );
 
             dtoList.add(dto);
         }
@@ -169,15 +172,17 @@ public class ReservationServiceImpl implements ReservationService {
         performanceSchedule.updateTicketQuantity
             (reservation.getReservedTicketNum() + performanceSchedule.getTicketQuantity());
 
+        reservation.updateCancelDate(LocalDateTime.now());
+
         return ResponseDto.builder()
             .statusCode(HttpStatus.OK.value())
             .message(CANCEL_MESSAGE)
-            .body(new ReservationResponseDto(
+            .body(new CancelReservationDto(
                 reservation.getPerformanceSchedule().getPerformance().getName(),
                 reservation.getReservedTicketNum(),
                 reservation.getReservationStatus(),
                 reservation.getPerformanceSchedule().getPerformanceDate(),
-                reservation.getReservationDate()
+                reservation.getCancelDate()
             ))
             .build();
     }
@@ -185,12 +190,12 @@ public class ReservationServiceImpl implements ReservationService {
     // 예매 수정하기
     @Transactional
     @Override
-    public ResponseDto changeReservation(Authentication auth, ChangeReservationDto dto) {
+    public ResponseDto changeReservation(Authentication auth, ReservationRequestDto dto, Long reservationId) {
         String email = auth.getName();
         int newTicketNum = Integer.parseInt(dto.getReservedTicketNum());
         Member member = memberRepository.findByEmail(email).orElseThrow(NotExistSuitableDataException::new);
 
-        Reservation reservation = reservationRepository.findById(dto.getReservationId())
+        Reservation reservation = reservationRepository.findById(reservationId)
             .orElseThrow(NotExistSuitableDataException::new);
 
         /** 예매 정보의 회원정보와 로그인 회원 일치 여부 확인 */
@@ -211,6 +216,7 @@ public class ReservationServiceImpl implements ReservationService {
                 member.getRating().getName());
 
             reservation.updateReservedTicketNum(Integer.parseInt(dto.getReservedTicketNum()));
+            reservation.updateReservationDate(LocalDateTime.now());
         }
 
         return ResponseDto.builder()
@@ -221,8 +227,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getReservedTicketNum(),
                 reservation.getReservationStatus(),
                 reservation.getPerformanceSchedule().getPerformanceDate(),
-                reservation.getReservationDate()
-            ))
+                reservation.getReservationDate()))
             .build();
     }
 

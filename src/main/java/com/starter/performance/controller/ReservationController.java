@@ -1,6 +1,5 @@
 package com.starter.performance.controller;
 
-import com.starter.performance.controller.dto.ChangeReservationDto;
 import com.starter.performance.controller.dto.ReservationRequestDto;
 import com.starter.performance.controller.dto.ResponseDto;
 import com.starter.performance.domain.Reservation;
@@ -67,10 +66,11 @@ public class ReservationController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/reservations")
+    @PutMapping("/reservations/{reservationId}")
     public ResponseEntity<ResponseDto> changeReservation(Authentication auth,
-        @RequestBody @Valid ChangeReservationDto dto) {
-        ResponseDto responseDto = reservationService.changeReservation(auth, dto);
+        @RequestBody @Valid ReservationRequestDto dto, @PathVariable Long reservationId) {
+        ResponseDto responseDto = reservationService.changeReservation(auth, dto, reservationId);
         return ResponseEntity.ok(responseDto);
     }
+
 }

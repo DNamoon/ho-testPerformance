@@ -44,11 +44,21 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDateTime reservationDate;
 
+    private LocalDateTime cancelDate;
+
     public void updateReservedTicketNum(Integer reservedTicketNum) {
         this.reservedTicketNum = reservedTicketNum;
     }
 
     public void updateReservationStatus(ReservationStatus reservationStatus) {
         this.reservationStatus = reservationStatus;
+    }
+
+    public void updateReservationDate(LocalDateTime reservationDate) {
+        this.reservationDate = reservationDate;
+    }
+
+    public void updateCancelDate(LocalDateTime cancelDate) {
+        this.cancelDate = cancelDate;
     }
 }

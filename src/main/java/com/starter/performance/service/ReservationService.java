@@ -1,6 +1,5 @@
 package com.starter.performance.service;
 
-import com.starter.performance.controller.dto.ChangeReservationDto;
 import com.starter.performance.controller.dto.ReservationRequestDto;
 import com.starter.performance.controller.dto.ResponseDto;
 import com.starter.performance.domain.Member;
@@ -19,12 +18,12 @@ public interface ReservationService {
 
     ResponseDto cancelReservation(Authentication auth, Long reservationId);
 
-    ResponseDto changeReservation(Authentication auth, ChangeReservationDto dto);
+    ResponseDto changeReservation(Authentication auth, ReservationRequestDto dto, Long reservationId);
 
     // 예매 완료 후 확인 메일 보내기
     void sendMail(String email, Reservation reservation);
 
-    void updateTicketForStandard(PerformanceSchedule performanceScheduleId, Integer ticket);
+    void updateTicketForStandard(PerformanceSchedule performanceSchedule, Integer ticket);
 
     void updateTicket(Long id, Integer ticket, RatingName ratingName);
 
